@@ -1,4 +1,4 @@
-import { Name, Photo, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, Name, Photo, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
 
 // Single-column, top-to-bottom layout, optionally with a photo.
@@ -16,8 +16,8 @@ export default function ClassicTemplate({ resume, theme, showPhoto = false }) {
           {personal.jobTitle && <p className={cn(tw.title, "mt-1 font-medium text-(--tpl)")}>{personal.jobTitle}</p>}
           {(contacts.length > 0 || links.length > 0) && (
             <div className={cn(tw.small, tw.muted, "mt-3 space-y-0.5")}>
-              {contacts.length > 0 && <p>{contacts.join("  |  ")}</p>}
-              {links.length > 0 && <p>{links.join("  |  ")}</p>}
+              <ContactList items={contacts} theme={theme} />
+              <ContactList items={links} theme={theme} />
             </div>
           )}
         </div>

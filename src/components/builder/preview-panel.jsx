@@ -9,6 +9,7 @@ import TemplatesPanel from "@/components/builder/templates-panel";
 import ThemePanel from "@/components/builder/theme-panel";
 import { getTemplate } from "@/components/builder/templates";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useBuilderStore } from "@/store/builderStore";
 
@@ -103,7 +104,7 @@ export default function PreviewPanel() {
           </div>
         </div>
 
-        <div className="absolute top-3 right-3 z-10 flex gap-2">
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
           <FloatingButton
             icon={LayoutTemplate}
             label="Templates"
@@ -118,7 +119,8 @@ export default function PreviewPanel() {
           />
         </div>
 
-        <div className="absolute right-3 bottom-3 z-10 flex items-center gap-0.5 rounded-full border border-border bg-background/95 p-1 shadow-md backdrop-blur-sm">
+        {/* Bottom-right on large screens; centred on small ones. */}
+        <div className="absolute right-3 bottom-3 z-10 flex items-center max-lg:right-auto max-lg:left-1/2 max-lg:-translate-x-1/2 gap-0.5 rounded-full border border-border bg-background/95 p-1 shadow-md backdrop-blur-sm">
           <Button variant="ghost" size="icon-sm" className="rounded-full" onClick={() => stepZoom(-0.1)} disabled={scale <= MIN_ZOOM} aria-label="Zoom out">
             <Minus />
           </Button>
@@ -173,19 +175,21 @@ export default function PreviewPanel() {
 
 function FloatingButton({ icon: Icon, label, active, onClick }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={cn(
-        "flex h-9 items-center gap-2 rounded-full border px-3.5 text-sm font-medium shadow-md backdrop-blur-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/40",
-        active
-          ? "border-brand bg-brand text-brand-foreground"
-          : "border-border bg-background/95 text-foreground hover:bg-muted"
-      )}
-    >
-      <Icon className="size-4" />
-      <span className="max-sm:sr-only">{label}</span>
-    </button>
+    <Tooltip>
+      <TooltipTrigger
+        onClick={onClick}
+        aria-pressed={active}
+        aria-label={label}
+        className={cn(
+          "flex size-10 items-center justify-center rounded-full border shadow-md backdrop-blur-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/40",
+          active
+            ? "border-brand bg-brand text-brand-foreground"
+            : "border-border bg-background/95 text-foreground hover:bg-muted"
+        )}
+      >
+        <Icon className="size-[18px]" />
+      </TooltipTrigger>
+      <TooltipContent side="left">{label}</TooltipContent>
+    </Tooltip>
   );
 }

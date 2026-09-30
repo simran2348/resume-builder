@@ -1,4 +1,4 @@
-import { Name, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, Name, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
 
 // Full-width header, then a wide main column and a tinted side panel for skills and languages.
@@ -13,7 +13,7 @@ export default function SplitTemplate({ resume, theme }) {
       <header className="border-b-4 border-(--tpl) pb-4">
         <Name value={personal.fullName} className={cn(tw.strong, "tracking-tight")} />
         {personal.jobTitle && <p className={cn(tw.title, "mt-1 text-(--tpl)")}>{personal.jobTitle}</p>}
-        {contacts.length > 0 && <p className={cn(tw.small, tw.muted, "mt-2")}>{contacts.join("   ·   ")}</p>}
+        <ContactList items={contacts} theme={theme} separator="·" className={cn(tw.small, tw.muted, "mt-2")} />
       </header>
 
       <div className={hasSide ? "grid grid-cols-[1fr_210px] gap-8" : ""}>
@@ -25,11 +25,7 @@ export default function SplitTemplate({ resume, theme }) {
           <aside className="mt-(--tpl-section-gap) self-start rounded-lg bg-(--tpl)/6 p-5 *:first:mt-0">
             {links.length > 0 && (
               <Section title="Links">
-                <ul className={cn(tw.small, "space-y-1 break-words")}>
-                  {links.map((link) => (
-                    <li key={link}>{link}</li>
-                  ))}
-                </ul>
+                <ContactList items={links} theme={theme} layout="stack" className={tw.small} />
               </Section>
             )}
             <ResumeSections

@@ -1,4 +1,4 @@
-import { Name, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, Name, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
 
 // Letter-spaced header and centered section titles between rules.
@@ -11,7 +11,7 @@ export default function MinimalTemplate({ resume, theme }) {
       <header className="text-center">
         <Name value={personal.fullName} className="font-normal tracking-[0.3em] text-(--tpl) uppercase" />
         {personal.jobTitle && <p className={cn(tw.small, tw.faint, "mt-2 tracking-[0.2em] uppercase")}>{personal.jobTitle}</p>}
-        {details.length > 0 && <p className={cn(tw.small, tw.muted, "mt-3")}>{details.join("   |   ")}</p>}
+        <ContactList items={details} theme={theme} className={cn(tw.small, tw.muted, "mt-3 justify-center")} />
       </header>
 
       <ResumeSections resume={resume} Section={Section} variants={{ skills: "inline" }} />

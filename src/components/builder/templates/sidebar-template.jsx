@@ -1,4 +1,4 @@
-import { Name, Photo, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, Name, Photo, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
 
 // Two columns: accent sidebar (photo, contact, skills, languages) and main content on the right.
@@ -13,11 +13,13 @@ export default function SidebarTemplate({ resume, theme }) {
 
         {details.length > 0 && (
           <SideSection title="Contact">
-            <ul className={cn(tw.small, "space-y-1.5 break-words")}>
-              {details.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
+            <ContactList
+              items={details}
+              theme={theme}
+              layout="stack"
+              className={cn(tw.small, "space-y-1.5")}
+              iconClassName="text-white"
+            />
           </SideSection>
         )}
 

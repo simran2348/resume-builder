@@ -1,4 +1,4 @@
-import { Name, ResumeSections, getContacts, getInitials, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, Name, ResumeSections, getContacts, getInitials, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
 
 // Accent header band with an initials box; sections separated by rules.
@@ -15,7 +15,13 @@ export default function BannerTemplate({ resume, theme }) {
         <div className="min-w-0">
           <Name value={personal.fullName} className="tracking-wide uppercase" />
           {personal.jobTitle && <p className="text-white/90">{personal.jobTitle}</p>}
-          {details.length > 0 && <p className={cn(tw.small, "mt-2 text-white/80")}>{details.join("  ·  ")}</p>}
+          <ContactList
+            items={details}
+            theme={theme}
+            separator="·"
+            className={cn(tw.small, "mt-2 text-white/85")}
+            iconClassName="text-white"
+          />
         </div>
       </header>
 

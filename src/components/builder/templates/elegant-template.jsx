@@ -1,4 +1,4 @@
-import { Name, ResumeSections, getContacts, getInitials, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, Name, ResumeSections, getContacts, getInitials, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
 
 // Centered header with a monogram; section titles followed by a hairline.
@@ -14,7 +14,7 @@ export default function ElegantTemplate({ resume, theme }) {
         </div>
         <Name value={personal.fullName} className="mt-3 font-medium tracking-[0.08em] text-(--tpl) uppercase" />
         {personal.jobTitle && <p className={cn(tw.muted, "mt-1 italic")}>{personal.jobTitle}</p>}
-        {details.length > 0 && <p className={cn(tw.small, tw.muted, "mt-3")}>{details.join("  |  ")}</p>}
+        <ContactList items={details} theme={theme} className={cn(tw.small, tw.muted, "mt-3 justify-center")} />
       </header>
 
       <ResumeSections resume={resume} Section={Section} />

@@ -32,15 +32,28 @@ export const useBuilderStore = create(
       importedFrom: "",
 
       setStep: (currentStep) => set({ currentStep }),
-      setTemplate: (templateId) => set({ templateId }),
+      // Changing template resets per-template theme defaults (contact icons).
+      setTemplate: (templateId) =>
+        set((state) => ({ templateId, theme: { ...state.theme, showContactIcons: null } })),
       // From the templates screen; an accent picked there is carried into the theme.
       chooseTemplate: (templateId, accent) =>
         set((state) => ({
           templateId,
-          theme: accent ? { ...state.theme, accent, photoBorderColor: accent } : state.theme,
+          theme: {
+            ...state.theme,
+            showContactIcons: null,
+            ...(accent && { accent, photoBorderColor: accent }),
+          },
         })),
       updateTheme: (key, value) => set((state) => ({ theme: { ...state.theme, [key]: value } })),
       resetTheme: () => set({ theme: DEFAULT_THEME }),
+      favoriteTemplates: [],
+      toggleFavorite: (templateId) =>
+        set((state) => ({
+          favoriteTemplates: state.favoriteTemplates.includes(templateId)
+            ? state.favoriteTemplates.filter((id) => id !== templateId)
+            : [...state.favoriteTemplates, templateId],
+        })),
       updatePersonal: (field, value) =>
         set((state) => ({ personal: { ...state.personal, [field]: value } })),
       setSummary: (summary) => set({ summary }),

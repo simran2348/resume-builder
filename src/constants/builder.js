@@ -30,7 +30,8 @@ export const ACCENT_COLORS = [
 ];
 
 // `supportsPhoto` controls the headshot filter and whether the photo upload shows in Personal details.
-// `columns` drives the columns filter. Colours, fonts and sizes come from the shared theme (DEFAULT_THEME).
+// `columns` drives the columns filter. `contactIcons` is the template's default for the
+// "Include contact icons" theme option. Colours, fonts and sizes come from the shared theme (DEFAULT_THEME).
 export const RESUME_TEMPLATES = [
   {
     id: "classic",
@@ -39,6 +40,16 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 1,
     recommended: true,
+    contactIcons: false,
+  },
+  {
+    id: "centered",
+    name: "Centered",
+    description: "Name, role and contact details centred at the top; classic sections below.",
+    supportsPhoto: false,
+    columns: 1,
+    recommended: true,
+    contactIcons: true,
   },
   {
     id: "elegant",
@@ -47,6 +58,7 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 1,
     recommended: true,
+    contactIcons: false,
   },
   {
     id: "side-headings",
@@ -55,6 +67,7 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: true,
     columns: 1,
     recommended: true,
+    contactIcons: true,
   },
   {
     id: "banner",
@@ -63,6 +76,7 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 1,
     recommended: false,
+    contactIcons: false,
   },
   {
     id: "classic-photo",
@@ -71,6 +85,7 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: true,
     columns: 1,
     recommended: false,
+    contactIcons: false,
   },
   {
     id: "minimal",
@@ -79,6 +94,7 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 1,
     recommended: false,
+    contactIcons: false,
   },
   {
     id: "timeline",
@@ -87,6 +103,7 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 1,
     recommended: false,
+    contactIcons: false,
   },
   {
     id: "sidebar",
@@ -95,6 +112,7 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: true,
     columns: 2,
     recommended: false,
+    contactIcons: true,
   },
   {
     id: "split",
@@ -103,6 +121,7 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 2,
     recommended: false,
+    contactIcons: false,
   },
   {
     id: "profile",
@@ -111,6 +130,7 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: true,
     columns: 2,
     recommended: false,
+    contactIcons: true,
   },
 ];
 
@@ -211,6 +231,8 @@ export const DEFAULT_THEME = {
   photoShape: "circle",
   photoBorderWidth: 0,
   photoBorderColor: "#2563eb",
+  // null = follow the selected template's `contactIcons` default; reset whenever the template changes.
+  showContactIcons: null,
 };
 
 // Slider ranges for the theme panel.

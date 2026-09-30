@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ImageIcon, Palette, Rows3, Type } from "lucide-react";
+import { Check, Contact, ImageIcon, Palette, Rows3, Type } from "lucide-react";
 
 import { getTemplate } from "@/components/builder/templates";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PHOTO_SHAPES, RESUME_FONTS, THEME_LIMITS, THEME_PALETTE } from "@/constants/builder";
@@ -17,7 +18,9 @@ export default function ThemePanel() {
   const theme = useBuilderStore((state) => state.theme);
   const templateId = useBuilderStore((state) => state.templateId);
   const updateTheme = useBuilderStore((state) => state.updateTheme);
-  const { supportsPhoto } = getTemplate(templateId);
+  const template = getTemplate(templateId);
+  const { supportsPhoto } = template;
+  const showContactIcons = theme.showContactIcons ?? template.contactIcons;
 
   const slider = (key, label) => (
     <SliderField label={label} value={theme[key]} limits={THEME_LIMITS[key]} onChange={(v) => updateTheme(key, v)} />
@@ -42,6 +45,24 @@ export default function ThemePanel() {
           <FontSelect label="Body font" value={theme.bodyFont} onChange={(v) => updateTheme("bodyFont", v)} />
         </div>
         {slider("lineHeight", "Line spacing")}
+      </PanelSection>
+
+      <PanelSection icon={Contact} title="Contact details">
+        <div className="flex items-start gap-3">
+          <Checkbox
+            id="theme-contact-icons"
+            checked={showContactIcons}
+            onCheckedChange={(checked) => updateTheme("showContactIcons", checked)}
+            className="mt-0.5 data-checked:border-brand data-checked:bg-brand data-checked:text-brand-foreground"
+          />
+          <div>
+            <Label htmlFor="theme-contact-icons">Include contact icons</Label>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Shows icons next to email, phone, location and links. {template.name} has them{" "}
+              {template.contactIcons ? "on" : "off"} by default.
+            </p>
+          </div>
+        </div>
       </PanelSection>
 
       <PanelSection icon={Rows3} title="Spacing">

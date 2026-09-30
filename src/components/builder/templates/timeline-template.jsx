@@ -1,4 +1,4 @@
-import { Name, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, Name, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
 
 // Name left, contacts right; experience drawn on a vertical timeline.
@@ -13,13 +13,12 @@ export default function TimelineTemplate({ resume, theme }) {
           <Name value={personal.fullName} className={cn(tw.strong, "font-extrabold tracking-tight")} />
           {personal.jobTitle && <p className={cn(tw.title, "mt-1 font-medium text-(--tpl)")}>{personal.jobTitle}</p>}
         </div>
-        {details.length > 0 && (
-          <ul className={cn(tw.small, tw.muted, "shrink-0 space-y-0.5 text-right")}>
-            {details.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        )}
+        <ContactList
+          items={details}
+          theme={theme}
+          layout="stack"
+          className={cn(tw.small, tw.muted, "shrink-0 space-y-0.5 [&>li]:justify-end")}
+        />
       </header>
 
       <ResumeSections resume={resume} Section={Section} variants={{ experience: "timeline", skills: "tags" }} />

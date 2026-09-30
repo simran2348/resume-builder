@@ -12,9 +12,10 @@ import { TEMPLATE_FILTERS } from "@/constants/builder";
 import { useBuilderStore } from "@/store/builderStore";
 import { useResumeStore } from "@/store/resumeStore";
 
-const EMPTY_FILTERS = { headshot: null, columns: null, color: null };
+const EMPTY_FILTERS = { headshot: null, columns: null, color: null, favorites: false };
 
-function matches(template, { headshot, columns }) {
+function matches(template, { headshot, columns, favorites }, favoriteIds) {
+  if (favorites && !favoriteIds.includes(template.id)) return false;
   if (headshot === "with" && !template.supportsPhoto) return false;
   if (headshot === "without" && template.supportsPhoto) return false;
   if (columns && String(template.columns) !== columns) return false;
@@ -28,6 +29,7 @@ export default function TemplateGallery() {
   const currentTemplateId = useBuilderStore((state) => state.templateId);
   const theme = useBuilderStore((state) => state.theme);
   const chooseTemplate = useBuilderStore((state) => state.chooseTemplate);
+  const favoriteIds = useBuilderStore((state) => state.favoriteTemplates);
   const importedFileName = useResumeStore((state) => state.importedFileName);
 
   useEffect(() => {
@@ -35,11 +37,19 @@ export default function TemplateGallery() {
     useResumeStore.persist.rehydrate();
   }, []);
 
-  const visible = useMemo(() => ALL_TEMPLATES.filter((t) => matches(t, filters)), [filters]);
+  const visible = useMemo(
+    () => ALL_TEMPLATES.filter((t) => matches(t, filters, favoriteIds)),
+    [filters, favoriteIds]
+  );
   const selectedColor = filters.color ? getColor(filters.color) : null;
   // Every card uses the same theme so only the layouts differ; a picked colour overrides the accent.
+  // Contact icons follow each template's own default.
   const cardTheme = useMemo(
-    () => (selectedColor ? { ...theme, accent: selectedColor.value, photoBorderColor: selectedColor.value } : theme),
+    () => ({
+      ...theme,
+      showContactIcons: null,
+      ...(selectedColor && { accent: selectedColor.value, photoBorderColor: selectedColor.value }),
+    }),
     [theme, selectedColor]
   );
 
@@ -49,6 +59,7 @@ export default function TemplateGallery() {
       return option ? [{ key, label: option.label }] : [];
     }),
     ...(selectedColor ? [{ key: "color", label: selectedColor.name, swatch: selectedColor.value }] : []),
+    ...(filters.favorites ? [{ key: "favorites", label: "Favourites" }] : []),
   ];
 
   function setFilter(key, value) {
@@ -80,10 +91,10 @@ export default function TemplateGallery() {
       )}
 
       <div className="mt-8 space-y-4">
-        <TemplateFilters filters={filters} onChange={setFilter} />
+        <TemplateFilters filters={filters} onChange={setFilter} favoriteCount={favoriteIds.length} />
         <AppliedFilters
           chips={chips}
-          onRemove={(key) => setFilter(key, null)}
+          onRemove={(key) => setFilter(key, EMPTY_FILTERS[key])}
           onClearAll={() => setFilters(EMPTY_FILTERS)}
         />
       </div>

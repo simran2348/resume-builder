@@ -1,12 +1,12 @@
 "use client";
 
-import { Check, X } from "lucide-react";
+import { Check, Heart, X } from "lucide-react";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ACCENT_COLORS, TEMPLATE_FILTERS } from "@/constants/builder";
 import { cn } from "@/lib/utils";
 
-export default function TemplateFilters({ filters, onChange }) {
+export default function TemplateFilters({ filters, onChange, favoriteCount }) {
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card/80 p-4 shadow-sm backdrop-blur-sm lg:flex-row lg:items-center lg:gap-6 lg:px-6">
       <p className="text-sm font-semibold text-foreground">Filter by</p>
@@ -31,6 +31,21 @@ export default function TemplateFilters({ filters, onChange }) {
             </SelectContent>
           </Select>
         ))}
+        <button
+          type="button"
+          aria-pressed={filters.favorites}
+          onClick={() => onChange("favorites", !filters.favorites)}
+          className={cn(
+            "flex h-10 items-center gap-2 rounded-lg border px-3 text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+            filters.favorites
+              ? "border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-500/40 dark:bg-rose-500/15 dark:text-rose-300"
+              : "border-input bg-background text-muted-foreground hover:bg-muted dark:bg-input/30"
+          )}
+        >
+          <Heart className={cn("size-4", filters.favorites && "fill-current")} />
+          Favourites
+          <span className="rounded-full bg-foreground/10 px-1.5 text-xs tabular-nums">{favoriteCount}</span>
+        </button>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 lg:ml-auto">

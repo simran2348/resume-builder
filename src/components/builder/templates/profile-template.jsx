@@ -1,4 +1,4 @@
-import { Name, Photo, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, Name, Photo, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
 
 // Tinted header with headshot, then a narrow details column on the left and main content on the right.
@@ -21,20 +21,12 @@ export default function ProfileTemplate({ resume, theme }) {
         <aside className={cn(tw.rule, "space-y-(--tpl-section-gap) border-r pr-6")}>
           {contacts.length > 0 && (
             <Section title="Contact">
-              <ul className={cn(tw.small, "space-y-1 break-words")}>
-                {contacts.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+              <ContactList items={contacts} theme={theme} layout="stack" className={tw.small} />
             </Section>
           )}
           {links.length > 0 && (
             <Section title="Links">
-              <ul className={cn(tw.small, "space-y-1 break-words")}>
-                {links.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+              <ContactList items={links} theme={theme} layout="stack" className={tw.small} />
             </Section>
           )}
           <ResumeSections

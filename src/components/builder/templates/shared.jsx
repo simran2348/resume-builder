@@ -5,6 +5,8 @@
 // so the theme panel updates all templates in real time. Use the `tw` classes below rather than fixed
 // colours, fonts or sizes.
 
+import { Globe, Mail, MapPin, Phone } from "lucide-react";
+
 import { DEFAULT_THEME, PHOTO_SHAPES, RESUME_FONTS } from "@/constants/builder";
 import { cn } from "@/lib/utils";
 
@@ -66,12 +68,82 @@ export function dateRange({ startDate, endDate }) {
   return [startDate, endDate].filter(Boolean).join(" – ");
 }
 
+const CONTACT_FIELDS = ["email", "phone", "location"];
+const LINK_FIELDS = ["linkedin", "github", "website"];
+
+// Contact details as `{ type, value }` items so they can be rendered with matching icons.
 export function getContacts(personal) {
-  return [personal.email, personal.phone, personal.location].filter(Boolean);
+  return CONTACT_FIELDS.filter((type) => personal[type]).map((type) => ({ type, value: personal[type] }));
 }
 
 export function getLinks(personal) {
-  return [personal.linkedin, personal.github, personal.website].filter(Boolean);
+  return LINK_FIELDS.filter((type) => personal[type]).map((type) => ({ type, value: personal[type] }));
+}
+
+// lucide doesn't ship brand icons, so LinkedIn and GitHub are inline SVGs.
+function LinkedInIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...props}>
+      <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8.02h4.56V23H.22V8.02zM8.34 8.02h4.37v2.05h.06c.61-1.15 2.1-2.36 4.32-2.36 4.62 0 5.47 3.04 5.47 6.99V23h-4.56v-7.2c0-1.72-.03-3.93-2.4-3.93-2.4 0-2.77 1.87-2.77 3.8V23H8.34V8.02z" />
+    </svg>
+  );
+}
+
+function GitHubIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...props}>
+      <path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.11.82-.26.82-.58v-2.04c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .3" />
+    </svg>
+  );
+}
+
+const CONTACT_ICONS = {
+  email: Mail,
+  phone: Phone,
+  location: MapPin,
+  linkedin: LinkedInIcon,
+  github: GitHubIcon,
+  website: Globe,
+};
+
+// Renders contact items inline (with separators) or stacked, with icons when the theme enables them.
+// Pass the template's `theme`; `showContactIcons` is already resolved per template by getTemplate().
+export function ContactList({ items, theme, layout = "inline", separator = "|", className, iconClassName }) {
+  if (!items.length) return null;
+  const showIcons = Boolean(theme?.showContactIcons);
+
+  const renderItem = (item) => {
+    const Icon = CONTACT_ICONS[item.type];
+    return (
+      <span className="inline-flex min-w-0 items-center gap-1.5">
+        {showIcons && Icon && <Icon className={cn("size-[1.05em] shrink-0 text-(--tpl)", iconClassName)} />}
+        <span className="break-words">{item.value}</span>
+      </span>
+    );
+  };
+
+  if (layout === "stack") {
+    return (
+      <ul className={cn("space-y-1", className)}>
+        {items.map((item) => (
+          <li key={item.type} className="flex">
+            {renderItem(item)}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  return (
+    <p className={cn("flex flex-wrap items-center gap-y-0.5", showIcons ? "gap-x-4" : "gap-x-2", className)}>
+      {items.map((item, i) => (
+        <span key={item.type} className="inline-flex items-center gap-2">
+          {!showIcons && i > 0 && <span className="opacity-50">{separator}</span>}
+          {renderItem(item)}
+        </span>
+      ))}
+    </p>
+  );
 }
 
 export function getInitials(name) {
