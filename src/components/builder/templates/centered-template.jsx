@@ -14,7 +14,7 @@ export default function CenteredTemplate({ resume, theme }) {
         <ContactList items={details} theme={theme} className={cn(tw.small, tw.muted, "mt-3 justify-center")} />
       </header>
 
-      <ResumeSections resume={resume} Section={Section} titles={{ summary: "Professional Summary" }} />
+      <ResumeSections resume={resume} Section={Section} />
     </div>
   );
 }

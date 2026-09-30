@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Contact, ImageIcon, Palette, Rows3, Type } from "lucide-react";
+import { Check, ImageIcon, LayoutList, Palette, Rows3, Type } from "lucide-react";
 
 import { getTemplate } from "@/components/builder/templates";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -47,22 +47,24 @@ export default function ThemePanel() {
         {slider("lineHeight", "Line spacing")}
       </PanelSection>
 
-      <PanelSection icon={Contact} title="Contact details">
-        <div className="flex items-start gap-3">
-          <Checkbox
-            id="theme-contact-icons"
-            checked={showContactIcons}
-            onCheckedChange={(checked) => updateTheme("showContactIcons", checked)}
-            className="mt-0.5 data-checked:border-brand data-checked:bg-brand data-checked:text-brand-foreground"
-          />
-          <div>
-            <Label htmlFor="theme-contact-icons">Include contact icons</Label>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Shows icons next to email, phone, location and links. {template.name} has them{" "}
-              {template.contactIcons ? "on" : "off"} by default.
-            </p>
-          </div>
-        </div>
+      <PanelSection icon={LayoutList} title="Display">
+        <CheckboxField
+          id="theme-contact-icons"
+          label="Include contact icons"
+          checked={showContactIcons}
+          onChange={(checked) => updateTheme("showContactIcons", checked)}
+        >
+          Shows icons next to email, phone, location and links. {template.name} has them{" "}
+          {template.contactIcons ? "on" : "off"} by default.
+        </CheckboxField>
+        <CheckboxField
+          id="theme-dividers"
+          label="Show dividers"
+          checked={theme.showDividers}
+          onChange={(checked) => updateTheme("showDividers", checked)}
+        >
+          Lines between sections, under headings and between columns, wherever the template uses them.
+        </CheckboxField>
       </PanelSection>
 
       <PanelSection icon={Rows3} title="Spacing">
@@ -132,6 +134,23 @@ export default function ThemePanel() {
           <ColorField label="Text" value={theme.text} onChange={(v) => updateTheme("text", v)} />
         </div>
       </PanelSection>
+    </div>
+  );
+}
+
+function CheckboxField({ id, label, checked, onChange, children }) {
+  return (
+    <div className="flex items-start gap-3">
+      <Checkbox
+        id={id}
+        checked={checked}
+        onCheckedChange={onChange}
+        className="mt-0.5 data-checked:border-brand data-checked:bg-brand data-checked:text-brand-foreground"
+      />
+      <div>
+        <Label htmlFor={id}>{label}</Label>
+        <p className="mt-1 text-xs text-muted-foreground">{children}</p>
+      </div>
     </div>
   );
 }

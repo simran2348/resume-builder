@@ -10,7 +10,7 @@ export default function SplitTemplate({ resume, theme }) {
 
   return (
     <div style={themeStyle(theme)} className={cn(tw.root, tw.padX, tw.padY)}>
-      <header className="border-b-4 border-(--tpl) pb-4">
+      <header className={cn(tw.accentRule, "border-b-4 pb-4")}>
         <Name value={personal.fullName} className={cn(tw.strong, "tracking-tight")} />
         {personal.jobTitle && <p className={cn(tw.title, "mt-1 text-(--tpl)")}>{personal.jobTitle}</p>}
         <ContactList items={contacts} theme={theme} separator="·" className={cn(tw.small, tw.muted, "mt-2")} />

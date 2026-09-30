@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { LayoutTemplate, Maximize, Minus, Paintbrush, Plus, RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Eraser, LayoutTemplate, Maximize, Minus, Paintbrush, Plus, RotateCcw } from "lucide-react";
 
 import { PAGE_HEIGHT, PAGE_WIDTH } from "@/components/builder/scaled-page";
 import SidePanel from "@/components/builder/side-panel";
@@ -9,9 +9,20 @@ import TemplatesPanel from "@/components/builder/templates-panel";
 import ThemePanel from "@/components/builder/theme-panel";
 import { getTemplate } from "@/components/builder/templates";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { SAMPLE_RESUME } from "@/constants/sample-resume";
+import { toTemplateResume } from "@/lib/resume-data";
 import { cn } from "@/lib/utils";
 import { useBuilderStore } from "@/store/builderStore";
+import { useResumeStore } from "@/store/resumeStore";
 
 // Space kept around the page when fitting: room for the floating buttons above and zoom bar below.
 const FIT_PADDING_X = 48;
@@ -27,12 +38,33 @@ export default function PreviewPanel() {
   const [zoom, setZoom] = useState(null);
   const [pageCount, setPageCount] = useState(1);
   const [activePanel, setActivePanel] = useState(null); // null | "templates" | "theme"
+  const [confirmReset, setConfirmReset] = useState(false);
 
   const templateId = useBuilderStore((state) => state.templateId);
   const theme = useBuilderStore((state) => state.theme);
   const personal = useBuilderStore((state) => state.personal);
   const summary = useBuilderStore((state) => state.summary);
+  const experience = useBuilderStore((state) => state.experience);
+  const sectionTitles = useBuilderStore((state) => state.sectionTitles);
+  const userResume = useMemo(
+    () => toTemplateResume({ personal, summary, experience, sectionTitles }),
+    [personal, summary, experience, sectionTitles]
+  );
+  // With nothing filled in (first visit or after a reset) most templates would render almost blank,
+  // so show example content in the chosen layout until the user starts typing.
+  const isEmpty =
+    !Object.values(personal).some(Boolean) && !summary.trim() && userResume.experience.length === 0;
+  const resume = isEmpty ? { ...SAMPLE_RESUME, sectionTitles } : userResume;
   const resetTheme = useBuilderStore((state) => state.resetTheme);
+  const resetResume = useBuilderStore((state) => state.resetResume);
+
+  function handleReset() {
+    resetResume();
+    // Also forget the uploaded file so it isn't imported again on the next visit.
+    useResumeStore.getState().clearImportedResume();
+    setActivePanel(null);
+    setConfirmReset(false);
+  }
   const { Component } = getTemplate(templateId);
 
   // Fit one full page into the frame; re-runs as side panels open/close and the frame resizes.
@@ -94,9 +126,10 @@ export default function PreviewPanel() {
                   <div
                     ref={page === 0 ? contentRef : undefined}
                     style={{ transform: `translateY(-${page * PAGE_HEIGHT}px)` }}
-                    aria-hidden={page > 0}
+                    aria-hidden={page > 0 || isEmpty}
+                    className={cn(isEmpty && "opacity-45")}
                   >
-                    <Component resume={{ personal, summary }} theme={theme} />
+                    <Component resume={resume} theme={theme} />
                   </div>
                 </div>
               </div>
@@ -104,7 +137,13 @@ export default function PreviewPanel() {
           </div>
         </div>
 
-        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
+        {isEmpty && (
+          <p className="absolute top-3 left-1/2 z-10 max-w-[calc(100%-7rem)] -translate-x-1/2 truncate rounded-full border border-border bg-background/95 px-3 py-1.5 text-xs text-muted-foreground shadow-sm backdrop-blur-sm">
+            Example content. Fill in your details to replace it.
+          </p>
+        )}
+
+        <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-2">
           <FloatingButton
             icon={LayoutTemplate}
             label="Templates"
@@ -117,7 +156,33 @@ export default function PreviewPanel() {
             active={activePanel === "theme"}
             onClick={() => togglePanel("theme")}
           />
+          <FloatingButton
+            icon={Eraser}
+            label="Reset resume"
+            tone="danger"
+            active={confirmReset}
+            onClick={() => setConfirmReset(true)}
+            className="mt-2"
+          />
         </div>
+
+        <Dialog open={confirmReset} onOpenChange={setConfirmReset}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Reset your resume?</DialogTitle>
+              <DialogDescription>
+                This clears everything you&apos;ve entered: personal details, summary, experience and custom section
+                titles. Your template and theme stay the same. This can&apos;t be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
+              <Button onClick={handleReset} className="bg-red-600 text-white hover:bg-red-700">
+                Reset resume
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Bottom-right on large screens; centred on small ones. */}
         <div className="absolute right-3 bottom-3 z-10 flex items-center max-lg:right-auto max-lg:left-1/2 max-lg:-translate-x-1/2 gap-0.5 rounded-full border border-border bg-background/95 p-1 shadow-md backdrop-blur-sm">
@@ -173,23 +238,40 @@ export default function PreviewPanel() {
   );
 }
 
-function FloatingButton({ icon: Icon, label, active, onClick }) {
+const FLOATING_TONES = {
+  default: {
+    idle: "border-border bg-background/95 text-foreground hover:bg-muted",
+    active: "border-brand bg-brand text-brand-foreground",
+    ring: "focus-visible:ring-brand/40",
+  },
+  danger: {
+    idle: "border-red-200 bg-red-50 text-red-600 hover:bg-red-100 dark:border-red-500/30 dark:bg-red-950/80 dark:text-red-400 dark:hover:bg-red-900/80",
+    active: "border-red-600 bg-red-600 text-white",
+    ring: "focus-visible:ring-red-500/40",
+  },
+};
+
+// Icon-only pill that slides its label out to the left on hover / keyboard focus.
+function FloatingButton({ icon: Icon, label, active, onClick, tone = "default", className }) {
+  const styles = FLOATING_TONES[tone];
   return (
-    <Tooltip>
-      <TooltipTrigger
-        onClick={onClick}
-        aria-pressed={active}
-        aria-label={label}
-        className={cn(
-          "flex size-10 items-center justify-center rounded-full border shadow-md backdrop-blur-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/40",
-          active
-            ? "border-brand bg-brand text-brand-foreground"
-            : "border-border bg-background/95 text-foreground hover:bg-muted"
-        )}
-      >
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={tone === "default" ? active : undefined}
+      className={cn(
+        "group/fab flex h-10 items-center rounded-full border shadow-md backdrop-blur-sm transition-colors outline-none focus-visible:ring-3",
+        styles.ring,
+        active ? styles.active : styles.idle,
+        className
+      )}
+    >
+      <span className="max-w-0 overflow-hidden text-sm font-medium whitespace-nowrap opacity-0 transition-all duration-200 group-hover/fab:max-w-36 group-hover/fab:pl-4 group-hover/fab:opacity-100 group-focus-visible/fab:max-w-36 group-focus-visible/fab:pl-4 group-focus-visible/fab:opacity-100">
+        {label}
+      </span>
+      <span className="flex size-10 shrink-0 items-center justify-center">
         <Icon className="size-[18px]" />
-      </TooltipTrigger>
-      <TooltipContent side="left">{label}</TooltipContent>
-    </Tooltip>
+      </span>
+    </button>
   );
 }

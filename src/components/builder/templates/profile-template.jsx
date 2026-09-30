@@ -42,7 +42,6 @@ export default function ProfileTemplate({ resume, theme }) {
             resume={resume}
             Section={Section}
             sections={["summary", "experience", "education"]}
-            titles={{ summary: "Profile" }}
           />
         </main>
       </div>
@@ -53,7 +52,7 @@ export default function ProfileTemplate({ resume, theme }) {
 function Section({ title, children }) {
   return (
     <section>
-      <h2 className={cn(tw.heading, tw.strong, "mb-2 border-b-2 border-(--tpl) pb-1 font-bold tracking-[0.14em] uppercase")}>
+      <h2 className={cn(tw.heading, tw.strong, tw.accentRule, "mb-2 border-b-2 pb-1 font-bold tracking-[0.14em] uppercase")}>
         {title}
       </h2>
       {children}

@@ -8,7 +8,7 @@ export default function TimelineTemplate({ resume, theme }) {
 
   return (
     <div style={themeStyle(theme)} className={cn(tw.root, tw.padX, tw.padY)}>
-      <header className="flex items-end justify-between gap-8 border-b-2 border-(--tpl) pb-5">
+      <header className={cn(tw.accentRule, "flex items-end justify-between gap-8 border-b-2 pb-5")}>
         <div className="min-w-0">
           <Name value={personal.fullName} className={cn(tw.strong, "font-extrabold tracking-tight")} />
           {personal.jobTitle && <p className={cn(tw.title, "mt-1 font-medium text-(--tpl)")}>{personal.jobTitle}</p>}

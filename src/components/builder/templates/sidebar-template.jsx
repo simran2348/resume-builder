@@ -65,7 +65,7 @@ export default function SidebarTemplate({ resume, theme }) {
 function SideSection({ title, children }) {
   return (
     <section className="mt-(--tpl-section-gap)">
-      <h2 className={cn(tw.heading, "mb-2 border-b border-white/30 pb-1 font-bold tracking-[0.14em] text-white uppercase")}>
+      <h2 className={cn(tw.heading, tw.inverseRule, "mb-2 border-b pb-1 font-bold tracking-[0.14em] text-white uppercase")}>
         {title}
       </h2>
       {children}

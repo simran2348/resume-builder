@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Eye, Loader2, PencilLine } from "lucide-react";
 
 import BuilderSidebar from "@/components/builder/builder-sidebar";
+import PanelResizer from "@/components/builder/panel-resizer";
 import PreviewPanel from "@/components/builder/preview-panel";
 import StepPanel from "@/components/builder/step-panel";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,8 @@ export default function ResumeBuilder() {
   const [isHydrated, setIsHydrated] = useState(false);
   // Below lg only one panel fits, so the user toggles between editing and previewing.
   const [mobileView, setMobileView] = useState("edit");
+  const formWidth = useBuilderStore((state) => state.formWidth);
+  const setFormWidth = useBuilderStore((state) => state.setFormWidth);
 
   useEffect(() => {
     async function hydrate() {
@@ -50,17 +53,21 @@ export default function ResumeBuilder() {
   }
 
   return (
-    <div className="flex h-svh flex-col overflow-hidden bg-background lg:grid lg:grid-cols-[72px_minmax(380px,460px)_1fr]">
+    <div
+      style={{ "--form-width": `${formWidth}px` }}
+      className="flex h-svh flex-col overflow-hidden bg-background lg:grid lg:grid-cols-[72px_var(--form-width)_1fr]"
+    >
       <BuilderSidebar />
 
       <section
         aria-label="Resume details"
         className={cn(
-          "min-h-0 flex-1 border-border lg:block lg:border-r",
+          "relative min-h-0 flex-1 border-border lg:block lg:border-r",
           mobileView === "edit" ? "block" : "hidden"
         )}
       >
         <StepPanel />
+        <PanelResizer width={formWidth} onChange={setFormWidth} />
       </section>
 
       <section

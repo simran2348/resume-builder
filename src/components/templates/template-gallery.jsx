@@ -8,7 +8,7 @@ import { ALL_TEMPLATES, getColor } from "@/components/builder/templates";
 import TemplateCard from "@/components/templates/template-card";
 import TemplateFilters, { AppliedFilters } from "@/components/templates/template-filters";
 import { Button } from "@/components/ui/button";
-import { TEMPLATE_FILTERS } from "@/constants/builder";
+import { DEFAULT_THEME, TEMPLATE_FILTERS } from "@/constants/builder";
 import { useBuilderStore } from "@/store/builderStore";
 import { useResumeStore } from "@/store/resumeStore";
 
@@ -27,7 +27,6 @@ export default function TemplateGallery() {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
 
   const currentTemplateId = useBuilderStore((state) => state.templateId);
-  const theme = useBuilderStore((state) => state.theme);
   const chooseTemplate = useBuilderStore((state) => state.chooseTemplate);
   const favoriteIds = useBuilderStore((state) => state.favoriteTemplates);
   const importedFileName = useResumeStore((state) => state.importedFileName);
@@ -42,15 +41,14 @@ export default function TemplateGallery() {
     [filters, favoriteIds]
   );
   const selectedColor = filters.color ? getColor(filters.color) : null;
-  // Every card uses the same theme so only the layouts differ; a picked colour overrides the accent.
-  // Contact icons follow each template's own default.
+  // Every card uses the default (charcoal) theme so only the layouts differ; a picked colour overrides
+  // the accent. Contact icons follow each template's own default.
   const cardTheme = useMemo(
     () => ({
-      ...theme,
-      showContactIcons: null,
+      ...DEFAULT_THEME,
       ...(selectedColor && { accent: selectedColor.value, photoBorderColor: selectedColor.value }),
     }),
-    [theme, selectedColor]
+    [selectedColor]
   );
 
   const chips = [

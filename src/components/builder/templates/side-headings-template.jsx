@@ -29,7 +29,7 @@ function Section({ title, children }) {
   return (
     <section className={cn(tw.gap, "grid grid-cols-[140px_1fr] gap-6")}>
       <div>
-        <span className="block h-0.5 w-14 bg-(--tpl)" />
+        <span className={cn(tw.accentLine, "block h-0.5 w-14")} />
         <h2 className={cn(tw.heading, tw.strong, "mt-1.5 font-bold tracking-wider uppercase")}>{title}</h2>
       </div>
       <div className={cn(tw.rule, "min-w-0 border-t pt-1.5")}>{children}</div>

@@ -8,7 +8,7 @@ import SideHeadingsTemplate from "@/components/builder/templates/side-headings-t
 import SidebarTemplate from "@/components/builder/templates/sidebar-template";
 import SplitTemplate from "@/components/builder/templates/split-template";
 import TimelineTemplate from "@/components/builder/templates/timeline-template";
-import { ACCENT_COLORS, DEFAULT_THEME, RESUME_TEMPLATES } from "@/constants/builder";
+import { ACCENT_COLORS, DEFAULT_SECTION_TITLES, DEFAULT_THEME, RESUME_TEMPLATES } from "@/constants/builder";
 
 function ClassicPhotoTemplate(props) {
   return <ClassicTemplate {...props} showPhoto />;
@@ -30,15 +30,20 @@ const TEMPLATE_COMPONENTS = {
   profile: ProfileTemplate,
 };
 
-// Fills in theme defaults and resolves per-template ones (contact icons) before rendering.
+// Resolves per-template defaults before rendering: theme (contact icons) and section titles
+// (user override > template default > generic default).
 // Built once per template so component identity stays stable across renders.
 const RESOLVED_COMPONENTS = Object.fromEntries(
   RESUME_TEMPLATES.map((meta) => {
     const Template = TEMPLATE_COMPONENTS[meta.id];
-    function ResolvedTemplate({ theme, ...props }) {
-      const resolved = { ...DEFAULT_THEME, ...theme };
-      resolved.showContactIcons = resolved.showContactIcons ?? meta.contactIcons;
-      return <Template {...props} theme={resolved} />;
+    function ResolvedTemplate({ theme, resume, ...props }) {
+      const resolvedTheme = { ...DEFAULT_THEME, ...theme };
+      resolvedTheme.showContactIcons = resolvedTheme.showContactIcons ?? meta.contactIcons;
+      const sectionTitles = { ...DEFAULT_SECTION_TITLES, ...meta.sectionTitles };
+      for (const [key, title] of Object.entries(resume.sectionTitles ?? {})) {
+        if (title?.trim()) sectionTitles[key] = title.trim();
+      }
+      return <Template {...props} resume={{ ...resume, sectionTitles }} theme={resolvedTheme} />;
     }
     return [meta.id, ResolvedTemplate];
   })
@@ -46,6 +51,12 @@ const RESOLVED_COMPONENTS = Object.fromEntries(
 
 export function getColor(colorId) {
   return ACCENT_COLORS.find((color) => color.id === colorId) ?? ACCENT_COLORS[0];
+}
+
+// The heading a template shows for `section` when the user hasn't renamed it.
+export function getDefaultSectionTitle(templateId, section) {
+  const meta = RESUME_TEMPLATES.find((t) => t.id === templateId);
+  return meta?.sectionTitles?.[section] ?? DEFAULT_SECTION_TITLES[section];
 }
 
 export function getTemplate(templateId) {

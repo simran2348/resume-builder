@@ -1,7 +1,8 @@
-import { FileText, UserRound } from "lucide-react";
+import { BriefcaseBusiness, FileText, UserRound } from "lucide-react";
 
 // Order here is the order shown in the sidebar and used by Back / Next.
 // Choosing a template happens before these steps, on the standalone /templates screen.
+// `section` links a step to a resume section, which makes its title editable.
 export const BUILDER_STEPS = [
   {
     id: "personal",
@@ -14,6 +15,14 @@ export const BUILDER_STEPS = [
     label: "Professional summary",
     description: "A short pitch at the top of your resume that sums up who you are.",
     icon: FileText,
+    section: "summary",
+  },
+  {
+    id: "experience",
+    label: "Experience",
+    description: "Your work history, most recent first. Focus on achievements, not just duties.",
+    icon: BriefcaseBusiness,
+    section: "experience",
   },
 ];
 
@@ -30,12 +39,14 @@ export const ACCENT_COLORS = [
 ];
 
 // `supportsPhoto` controls the headshot filter and whether the photo upload shows in Personal details.
+// `sectionTitles` overrides DEFAULT_SECTION_TITLES for that template (users can override both).
 // `columns` drives the columns filter. `contactIcons` is the template's default for the
 // "Include contact icons" theme option. Colours, fonts and sizes come from the shared theme (DEFAULT_THEME).
 export const RESUME_TEMPLATES = [
   {
     id: "classic",
     name: "Classic",
+    sectionTitles: { summary: "Professional Summary" },
     description: "Single column, top to bottom. The safest choice for ATS scanners.",
     supportsPhoto: false,
     columns: 1,
@@ -45,6 +56,7 @@ export const RESUME_TEMPLATES = [
   {
     id: "centered",
     name: "Centered",
+    sectionTitles: { summary: "Professional Summary" },
     description: "Name, role and contact details centred at the top; classic sections below.",
     supportsPhoto: false,
     columns: 1,
@@ -81,6 +93,7 @@ export const RESUME_TEMPLATES = [
   {
     id: "classic-photo",
     name: "Classic with photo",
+    sectionTitles: { summary: "Professional Summary" },
     description: "The classic layout with a profile photo in the header.",
     supportsPhoto: true,
     columns: 1,
@@ -126,6 +139,7 @@ export const RESUME_TEMPLATES = [
   {
     id: "profile",
     name: "Profile",
+    sectionTitles: { summary: "Profile" },
     description: "Tinted header with a headshot and a narrow details column.",
     supportsPhoto: true,
     columns: 2,
@@ -151,20 +165,21 @@ export const TEMPLATE_FILTERS = {
   },
 };
 
+// `required: true` fields must be filled for the step to count as complete (see src/lib/validation.js).
 export const PERSONAL_FIELD_GROUPS = [
   {
     title: "Basic info",
     fields: [
-      { name: "fullName", label: "Full name", placeholder: "Jane Doe", autoComplete: "name" },
+      { name: "fullName", label: "Full name", placeholder: "Jane Doe", autoComplete: "name", required: true },
       { name: "jobTitle", label: "Job title", placeholder: "Frontend Engineer", autoComplete: "organization-title" },
     ],
   },
   {
     title: "Contact",
     fields: [
-      { name: "email", label: "Email", placeholder: "jane@example.com", type: "email", autoComplete: "email" },
-      { name: "phone", label: "Phone", placeholder: "+1 555 123 4567", type: "tel", autoComplete: "tel" },
-      { name: "location", label: "Location", placeholder: "San Francisco, CA", autoComplete: "address-level2" },
+      { name: "email", label: "Email", placeholder: "jane@example.com", type: "email", autoComplete: "email", required: true },
+      { name: "phone", label: "Phone", placeholder: "+1 555 123 4567", type: "tel", autoComplete: "tel", required: true },
+      { name: "location", label: "Location", placeholder: "San Francisco, CA", autoComplete: "address-level2", required: true },
     ],
   },
   {
@@ -217,7 +232,7 @@ export const THEME_PALETTE = [
 
 // One theme shared by every template, so templates differ only in layout.
 export const DEFAULT_THEME = {
-  accent: "#2563eb",
+  accent: "#1f2937",
   background: "#ffffff",
   text: "#262626",
   headingFont: "inter",
@@ -230,9 +245,11 @@ export const DEFAULT_THEME = {
   pageMargin: 52,
   photoShape: "circle",
   photoBorderWidth: 0,
-  photoBorderColor: "#2563eb",
+  photoBorderColor: "#1f2937",
   // null = follow the selected template's `contactIcons` default; reset whenever the template changes.
   showContactIcons: null,
+  // Thin rules between sections / under headings, in templates that use them.
+  showDividers: true,
 };
 
 // Slider ranges for the theme panel.
@@ -251,3 +268,28 @@ export const PHOTO_SHAPES = [
   { id: "rounded", label: "Rounded", radius: "14%" },
   { id: "square", label: "Square", radius: "0px" },
 ];
+
+// Section headings used when neither the template nor the user sets one.
+export const DEFAULT_SECTION_TITLES = {
+  summary: "Summary",
+  experience: "Experience",
+  education: "Education",
+  skills: "Skills",
+  languages: "Languages",
+};
+
+export const EXPERIENCE_FIELDS = [
+  { name: "role", label: "Job title", placeholder: "Senior Software Engineer", required: true },
+  { name: "company", label: "Employer", placeholder: "Acme Corp" },
+  { name: "location", label: "Location", placeholder: "San Francisco, CA or Remote" },
+];
+
+export const EXPERIENCE_CONFIG = {
+  bulletPlaceholder: "Led a team of 5 engineers to rebuild checkout, increasing conversion by 18%.",
+  bulletTip: "Start each point with an action verb and add numbers where you can. Press Enter for a new point.",
+  // How far back the year pickers go.
+  yearsBack: 50,
+};
+
+// Width limits (px) for the draggable form panel in the builder.
+export const FORM_PANEL_WIDTH = { min: 360, max: 760, default: 420 };

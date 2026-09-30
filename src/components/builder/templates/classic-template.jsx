@@ -23,7 +23,7 @@ export default function ClassicTemplate({ resume, theme, showPhoto = false }) {
         </div>
       </header>
 
-      <ResumeSections resume={resume} Section={Section} titles={{ summary: "Professional Summary" }} />
+      <ResumeSections resume={resume} Section={Section} />
     </div>
   );
 }

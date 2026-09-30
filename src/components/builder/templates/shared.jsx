@@ -19,8 +19,12 @@ export const tw = {
   strong: "text-(--tpl-text)",
   muted: "text-(--tpl-text)/75",
   faint: "text-(--tpl-text)/60",
-  rule: "border-(--tpl-text)/15",
-  line: "bg-(--tpl-text)/20",
+  // Dividers: transparent when the theme's "Show dividers" option is off, so layouts never shift.
+  rule: "border-(--tpl-divider)",
+  line: "bg-(--tpl-divider)",
+  accentRule: "border-(--tpl-accent-divider)",
+  accentLine: "bg-(--tpl-accent-divider)",
+  inverseRule: "border-(--tpl-inverse-divider)",
   padX: "px-(--tpl-margin)",
   padY: "py-(--tpl-margin)",
   gap: "mt-(--tpl-section-gap)",
@@ -51,16 +55,11 @@ export function themeStyle(theme = DEFAULT_THEME) {
     "--tpl-photo-radius": shape.radius,
     "--tpl-photo-border": `${t.photoBorderWidth}px`,
     "--tpl-photo-border-color": t.photoBorderColor,
+    "--tpl-divider": t.showDividers ? `color-mix(in oklab, ${t.text} 18%, transparent)` : "transparent",
+    "--tpl-accent-divider": t.showDividers ? t.accent : "transparent",
+    "--tpl-inverse-divider": t.showDividers ? "rgb(255 255 255 / 0.3)" : "transparent",
   };
 }
-
-export const SECTION_TITLES = {
-  summary: "Summary",
-  experience: "Experience",
-  education: "Education",
-  skills: "Skills",
-  languages: "Languages",
-};
 
 export const DEFAULT_SECTION_ORDER = ["summary", "experience", "education", "skills", "languages"];
 
@@ -330,12 +329,13 @@ function renderSection(key, resume, variants) {
 }
 
 // Renders each non-empty section inside the template's own `Section({ title, children })` wrapper.
-export function ResumeSections({ resume, Section, sections = DEFAULT_SECTION_ORDER, variants = {}, titles = {} }) {
+// Titles come from `resume.sectionTitles`, already resolved (user > template > default) by getTemplate().
+export function ResumeSections({ resume, Section, sections = DEFAULT_SECTION_ORDER, variants = {} }) {
   return sections.map((key) => {
     const content = renderSection(key, resume, variants);
     if (!content) return null;
     return (
-      <Section key={key} title={titles[key] ?? SECTION_TITLES[key]}>
+      <Section key={key} title={resume.sectionTitles[key]}>
         {content}
       </Section>
     );
