@@ -1,5 +1,11 @@
-import { ContactList, Name, Photo, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, MAIN_SECTIONS, Name, Photo, ResumeSections, SIDE_SECTIONS, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
+
+const INVERSE_VARS = {
+  "--tpl-text": "#ffffff",
+  "--tpl": "#ffffff",
+  "--tpl-divider": "var(--tpl-inverse-divider)",
+};
 
 // Two columns: accent sidebar (photo, contact, skills, languages) and main content on the right.
 export default function SidebarTemplate({ resume, theme }) {
@@ -23,40 +29,22 @@ export default function SidebarTemplate({ resume, theme }) {
           </SideSection>
         )}
 
-        {resume.skills?.length > 0 && (
-          <SideSection title="Skills">
-            <ul className="space-y-1">
-              {resume.skills.map((skill) => (
-                <li key={skill}>{skill}</li>
-              ))}
-            </ul>
-          </SideSection>
-        )}
-
-        {resume.languages?.length > 0 && (
-          <SideSection title="Languages">
-            <div className="space-y-2">
-              {resume.languages.map((lang) => (
-                <div key={lang.name}>
-                  <div className={cn(tw.small, "flex justify-between")}>
-                    <span className="font-medium text-white">{lang.name}</span>
-                    <span>{lang.proficiency}</span>
-                  </div>
-                  <div className="mt-1 h-1 rounded-full bg-white/25">
-                    <div className="h-full rounded-full bg-white" style={{ width: `${((lang.level ?? 3) / 5) * 100}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </SideSection>
-        )}
+        {/* Shared renderers with the text / accent colours flipped to white for the coloured column. */}
+        <div style={INVERSE_VARS}>
+          <ResumeSections
+            resume={resume}
+            Section={SideSection}
+            only={SIDE_SECTIONS}
+            variants={{ skills: "stack", languages: "bars", hobbies: "stack" }}
+          />
+        </div>
       </aside>
 
       <main className="px-[calc(var(--tpl-margin)*0.8)] py-(--tpl-margin)">
         <Name value={personal.fullName} className={cn(tw.strong, "tracking-tight")} />
         {personal.jobTitle && <p className={cn(tw.title, "mt-1 font-medium text-(--tpl)")}>{personal.jobTitle}</p>}
 
-        <ResumeSections resume={resume} Section={Section} sections={["summary", "experience", "education"]} />
+        <ResumeSections resume={resume} Section={Section} only={MAIN_SECTIONS} />
       </main>
     </div>
   );

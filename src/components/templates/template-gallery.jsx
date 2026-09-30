@@ -7,6 +7,7 @@ import { FileCheck2, SearchX } from "lucide-react";
 import { ALL_TEMPLATES, getColor } from "@/components/builder/templates";
 import TemplateCard from "@/components/templates/template-card";
 import TemplateFilters, { AppliedFilters } from "@/components/templates/template-filters";
+import TemplatePreviewDialog from "@/components/templates/template-preview-dialog";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_THEME, TEMPLATE_FILTERS } from "@/constants/builder";
 import { useBuilderStore } from "@/store/builderStore";
@@ -25,6 +26,8 @@ function matches(template, { headshot, columns, favorites }, favoriteIds) {
 export default function TemplateGallery() {
   const router = useRouter();
   const [filters, setFilters] = useState(EMPTY_FILTERS);
+  // Index into `visible` of the template open in the preview dialog.
+  const [previewIndex, setPreviewIndex] = useState(null);
 
   const currentTemplateId = useBuilderStore((state) => state.templateId);
   const chooseTemplate = useBuilderStore((state) => state.chooseTemplate);
@@ -111,6 +114,7 @@ export default function TemplateGallery() {
               theme={cardTheme}
               isCurrent={template.id === currentTemplateId}
               onChoose={handleChoose}
+              onPreview={(t) => setPreviewIndex(visible.findIndex((v) => v.id === t.id))}
             />
           ))}
         </div>
@@ -123,6 +127,15 @@ export default function TemplateGallery() {
           </Button>
         </div>
       )}
+
+      <TemplatePreviewDialog
+        templates={visible}
+        index={previewIndex}
+        onIndexChange={setPreviewIndex}
+        onClose={() => setPreviewIndex(null)}
+        onChoose={handleChoose}
+        theme={cardTheme}
+      />
     </section>
   );
 }

@@ -19,7 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SAMPLE_RESUME } from "@/constants/sample-resume";
-import { toTemplateResume } from "@/lib/resume-data";
+import { useResumeContent } from "@/hooks/use-resume-content";
 import { cn } from "@/lib/utils";
 import { useBuilderStore } from "@/store/builderStore";
 import { useResumeStore } from "@/store/resumeStore";
@@ -42,19 +42,16 @@ export default function PreviewPanel() {
 
   const templateId = useBuilderStore((state) => state.templateId);
   const theme = useBuilderStore((state) => state.theme);
-  const personal = useBuilderStore((state) => state.personal);
-  const summary = useBuilderStore((state) => state.summary);
-  const experience = useBuilderStore((state) => state.experience);
-  const sectionTitles = useBuilderStore((state) => state.sectionTitles);
-  const userResume = useMemo(
-    () => toTemplateResume({ personal, summary, experience, sectionTitles }),
-    [personal, summary, experience, sectionTitles]
-  );
+  const { resume: userResume, isEmpty } = useResumeContent();
   // With nothing filled in (first visit or after a reset) most templates would render almost blank,
   // so show example content in the chosen layout until the user starts typing.
-  const isEmpty =
-    !Object.values(personal).some(Boolean) && !summary.trim() && userResume.experience.length === 0;
-  const resume = isEmpty ? { ...SAMPLE_RESUME, sectionTitles } : userResume;
+  const resume = useMemo(
+    () =>
+      isEmpty
+        ? { ...SAMPLE_RESUME, sectionTitles: userResume.sectionTitles, sectionOrder: userResume.sectionOrder }
+        : userResume,
+    [isEmpty, userResume]
+  );
   const resetTheme = useBuilderStore((state) => state.resetTheme);
   const resetResume = useBuilderStore((state) => state.resetResume);
 

@@ -8,7 +8,13 @@ import SideHeadingsTemplate from "@/components/builder/templates/side-headings-t
 import SidebarTemplate from "@/components/builder/templates/sidebar-template";
 import SplitTemplate from "@/components/builder/templates/split-template";
 import TimelineTemplate from "@/components/builder/templates/timeline-template";
-import { ACCENT_COLORS, DEFAULT_SECTION_TITLES, DEFAULT_THEME, RESUME_TEMPLATES } from "@/constants/builder";
+import {
+  ACCENT_COLORS,
+  DEFAULT_SECTION_ORDER,
+  DEFAULT_SECTION_TITLES,
+  DEFAULT_THEME,
+  RESUME_TEMPLATES,
+} from "@/constants/builder";
 
 function ClassicPhotoTemplate(props) {
   return <ClassicTemplate {...props} showPhoto />;
@@ -43,7 +49,8 @@ const RESOLVED_COMPONENTS = Object.fromEntries(
       for (const [key, title] of Object.entries(resume.sectionTitles ?? {})) {
         if (title?.trim()) sectionTitles[key] = title.trim();
       }
-      return <Template {...props} resume={{ ...resume, sectionTitles }} theme={resolvedTheme} />;
+      const sectionOrder = resume.sectionOrder ?? ["summary", ...DEFAULT_SECTION_ORDER];
+      return <Template {...props} resume={{ ...resume, sectionTitles, sectionOrder }} theme={resolvedTheme} />;
     }
     return [meta.id, ResolvedTemplate];
   })

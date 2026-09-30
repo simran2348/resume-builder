@@ -46,8 +46,30 @@ export const SAMPLE_RESUME = {
       location: "Austin, TX",
       startDate: "2013",
       endDate: "2017",
+      grade: "GPA 3.8 / 4.0",
     },
   ],
+  projects: [
+    {
+      name: "Open-source design system",
+      role: "Creator & maintainer",
+      link: "github.com/johndoe/ui-kit",
+      startDate: "2022",
+      endDate: "Present",
+      description: "Accessible React component library with 40+ components, used by 3,000+ developers.",
+    },
+  ],
+  achievements: [
+    {
+      title: "Engineering Excellence Award, Acme Corp",
+      date: "2023",
+      description: "Recognised for leading the checkout rebuild that lifted conversion by 18%.",
+    },
+  ],
+  certifications: [
+    { name: "AWS Certified Solutions Architect", issuer: "Amazon Web Services", date: "2022" },
+  ],
+  hobbies: ["Rock climbing", "Photography", "Chess"],
   skills: ["JavaScript", "TypeScript", "React", "Next.js", "Node.js", "PostgreSQL", "AWS", "Docker"],
   // `level` is 1–5 and drives the proficiency bars in some templates.
   languages: [

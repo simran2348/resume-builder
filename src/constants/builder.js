@@ -1,14 +1,27 @@
-import { BriefcaseBusiness, FileText, UserRound } from "lucide-react";
+import {
+  BadgeCheck,
+  BriefcaseBusiness,
+  FileText,
+  FolderKanban,
+  GraduationCap,
+  Languages,
+  Puzzle,
+  ScanEye,
+  Sparkles,
+  Trophy,
+  UserRound,
+} from "lucide-react";
 
-// Order here is the order shown in the sidebar and used by Back / Next.
-// Choosing a template happens before these steps, on the standalone /templates screen.
-// `section` links a step to a resume section, which makes its title editable.
+// Every builder step, in default order. Choosing a template happens before these, on /templates.
+// `section` links a step to a resume section (makes its title editable and lets it be reordered /
+// removed on the review step). `required` steps must be complete; optional ones have no validation.
 export const BUILDER_STEPS = [
   {
     id: "personal",
     label: "Personal details",
     description: "How recruiters will reach you. Only filled-in fields appear on your resume.",
     icon: UserRound,
+    required: true,
   },
   {
     id: "summary",
@@ -16,6 +29,7 @@ export const BUILDER_STEPS = [
     description: "A short pitch at the top of your resume that sums up who you are.",
     icon: FileText,
     section: "summary",
+    required: true,
   },
   {
     id: "experience",
@@ -23,7 +37,78 @@ export const BUILDER_STEPS = [
     description: "Your work history, most recent first. Focus on achievements, not just duties.",
     icon: BriefcaseBusiness,
     section: "experience",
+    required: true,
   },
+  {
+    id: "skills",
+    label: "Skills",
+    description: "Tools, technologies and strengths recruiters search for. Drag to put the most relevant first.",
+    icon: Sparkles,
+    section: "skills",
+    required: true,
+  },
+  {
+    id: "education",
+    label: "Education",
+    description: "Degrees, diplomas and relevant courses, most recent first.",
+    icon: GraduationCap,
+    section: "education",
+    required: true,
+  },
+  {
+    id: "projects",
+    label: "Projects",
+    description: "Optional. Side projects, open source or notable work that shows what you can do.",
+    icon: FolderKanban,
+    section: "projects",
+  },
+  {
+    id: "hobbies",
+    label: "Hobbies",
+    description: "Optional. A few interests can make you memorable. Keep it short.",
+    icon: Puzzle,
+    section: "hobbies",
+  },
+  {
+    id: "languages",
+    label: "Languages",
+    description: "Optional. Languages you speak and how well.",
+    icon: Languages,
+    section: "languages",
+  },
+  {
+    id: "achievements",
+    label: "Achievements",
+    description: "Optional. Awards, recognitions and results you're proud of.",
+    icon: Trophy,
+    section: "achievements",
+  },
+  {
+    id: "certifications",
+    label: "Certifications",
+    description: "Optional. Licences and certificates, with the issuing organisation.",
+    icon: BadgeCheck,
+    section: "certifications",
+  },
+  {
+    id: "preview",
+    label: "Preview & download",
+    description: "Reorder, edit or remove sections, then download or print your resume.",
+    icon: ScanEye,
+  },
+];
+
+// Default order of resume sections after the summary (which always stays first).
+// The review step lets users reorder these; the builder steps follow the same order.
+export const DEFAULT_SECTION_ORDER = [
+  "experience",
+  "skills",
+  "education",
+  "projects",
+  "hobbies",
+  "languages",
+  "achievements",
+  "certifications",
 ];
 
 // Accent colours offered on the templates screen. `value` is applied to headings, rules and highlights.
@@ -275,7 +360,11 @@ export const DEFAULT_SECTION_TITLES = {
   experience: "Experience",
   education: "Education",
   skills: "Skills",
+  projects: "Projects",
+  hobbies: "Hobbies",
   languages: "Languages",
+  achievements: "Achievements",
+  certifications: "Certifications",
 };
 
 export const EXPERIENCE_FIELDS = [
@@ -293,3 +382,105 @@ export const EXPERIENCE_CONFIG = {
 
 // Width limits (px) for the draggable form panel in the builder.
 export const FORM_PANEL_WIDTH = { min: 360, max: 760, default: 420 };
+
+// Chip-style sections (a list of short names).
+export const CHIP_SECTIONS = {
+  skills: {
+    inputLabel: "Add a skill",
+    placeholder: "e.g. React, Figma, Project management",
+    hint: "Press Enter or comma to add. Paste a comma-separated list to add several at once.",
+    emptyText: "No skills yet. Add the ones most relevant to the job you want.",
+  },
+  hobbies: {
+    inputLabel: "Add a hobby or interest",
+    placeholder: "e.g. Rock climbing, Photography",
+    hint: "Press Enter or comma to add.",
+    emptyText: "No hobbies added. This section is optional.",
+  },
+};
+
+export const LANGUAGE_LEVELS = [
+  { value: "Native", label: "Native", level: 5 },
+  { value: "Fluent", label: "Fluent", level: 4.5 },
+  { value: "Professional", label: "Professional", level: 4 },
+  { value: "Intermediate", label: "Intermediate", level: 3 },
+  { value: "Basic", label: "Basic", level: 2 },
+];
+
+// Config for list-style sections edited with the generic ListEditor.
+// Field types: text (default) | url | month | checkbox | textarea | select.
+// `disabledBy` disables a field while another (checkbox) field is true. `span: 2` = full width.
+export const LIST_SECTIONS = {
+  education: {
+    itemLabel: "education",
+    addLabel: "Add education",
+    emptyTitle: "No education added yet",
+    emptyText: "Add your highest or most relevant qualification first.",
+    titleField: "degree",
+    subtitleField: "school",
+    fields: [
+      { name: "degree", label: "Degree / qualification", placeholder: "B.S. Computer Science", required: true },
+      { name: "school", label: "School / university", placeholder: "University of Texas at Austin", required: true },
+      { name: "location", label: "Location", placeholder: "Austin, TX", span: 2 },
+      { name: "startDate", label: "Start date", type: "month" },
+      { name: "endDate", label: "End date", type: "month", disabledBy: "current" },
+      { name: "current", label: "I currently study here", type: "checkbox", span: 2 },
+      { name: "grade", label: "Grade / GPA", placeholder: "GPA 3.8 / 4.0" },
+      { name: "description", label: "Details", type: "textarea", span: 2, placeholder: "Relevant coursework, thesis, honours…" },
+    ],
+  },
+  projects: {
+    itemLabel: "project",
+    addLabel: "Add project",
+    emptyTitle: "No projects added",
+    emptyText: "Optional. Show off side projects, open source or notable work.",
+    titleField: "name",
+    subtitleField: "role",
+    fields: [
+      { name: "name", label: "Project title", placeholder: "Open-source design system" },
+      { name: "role", label: "Your role / tech stack", placeholder: "Creator · React, TypeScript" },
+      { name: "link", label: "Link", type: "url", placeholder: "github.com/you/project", span: 2 },
+      { name: "startDate", label: "Start date", type: "month" },
+      { name: "endDate", label: "End date", type: "month", disabledBy: "current" },
+      { name: "current", label: "Ongoing project", type: "checkbox", span: 2 },
+      { name: "description", label: "Description", type: "textarea", span: 2, placeholder: "What it does, your contribution and the impact…" },
+    ],
+  },
+  languages: {
+    itemLabel: "language",
+    addLabel: "Add language",
+    emptyTitle: "No languages added",
+    emptyText: "Optional. List languages you speak and your level.",
+    compact: true,
+    fields: [
+      { name: "name", label: "Language", placeholder: "Spanish" },
+      { name: "proficiency", label: "Level", type: "select", options: LANGUAGE_LEVELS, placeholder: "Level" },
+    ],
+  },
+  achievements: {
+    itemLabel: "achievement",
+    addLabel: "Add achievement",
+    emptyTitle: "No achievements added",
+    emptyText: "Optional. Awards, recognitions or standout results.",
+    titleField: "title",
+    fields: [
+      { name: "title", label: "Achievement", placeholder: "Engineering Excellence Award", span: 2 },
+      { name: "date", label: "Date", type: "month" },
+      { name: "description", label: "Description", type: "textarea", span: 2, placeholder: "What you achieved and why it mattered…" },
+    ],
+  },
+  certifications: {
+    itemLabel: "certification",
+    addLabel: "Add certification",
+    emptyTitle: "No certifications added",
+    emptyText: "Optional. Licences and certificates with the issuing organisation.",
+    titleField: "name",
+    subtitleField: "issuer",
+    fields: [
+      { name: "name", label: "Certification", placeholder: "AWS Certified Solutions Architect", span: 2 },
+      { name: "issuer", label: "Issued by", placeholder: "Amazon Web Services" },
+      { name: "date", label: "Date", type: "month" },
+      { name: "link", label: "Credential link", type: "url", placeholder: "credly.com/badges/…", span: 2 },
+    ],
+  },
+};

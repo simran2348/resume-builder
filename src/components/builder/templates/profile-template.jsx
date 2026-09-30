@@ -1,4 +1,4 @@
-import { ContactList, Name, Photo, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, MAIN_SECTIONS, Name, Photo, ResumeSections, SIDE_SECTIONS, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
 
 // Tinted header with headshot, then a narrow details column on the left and main content on the right.
@@ -32,8 +32,8 @@ export default function ProfileTemplate({ resume, theme }) {
           <ResumeSections
             resume={resume}
             Section={Section}
-            sections={["skills", "languages"]}
-            variants={{ skills: "stack", languages: "bars" }}
+            only={SIDE_SECTIONS}
+            variants={{ skills: "stack", languages: "bars", hobbies: "stack" }}
           />
         </aside>
 
@@ -41,7 +41,7 @@ export default function ProfileTemplate({ resume, theme }) {
           <ResumeSections
             resume={resume}
             Section={Section}
-            sections={["summary", "experience", "education"]}
+            only={MAIN_SECTIONS}
           />
         </main>
       </div>

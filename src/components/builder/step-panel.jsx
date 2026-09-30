@@ -2,12 +2,15 @@
 
 import { ArrowLeft, ArrowRight, CircleAlert, PencilLine, RotateCcw } from "lucide-react";
 
+import ChipsStep from "@/components/builder/steps/chips-step";
 import ExperienceStep from "@/components/builder/steps/experience-step";
+import ListStep from "@/components/builder/steps/list-step";
 import PersonalStep from "@/components/builder/steps/personal-step";
+import ReviewStep from "@/components/builder/steps/review-step";
 import SummaryStep from "@/components/builder/steps/summary-step";
 import { getDefaultSectionTitle } from "@/components/builder/templates";
 import { Button } from "@/components/ui/button";
-import { BUILDER_STEPS } from "@/constants/builder";
+import { useBuilderSteps } from "@/hooks/use-builder-steps";
 import { useStepValidation } from "@/hooks/use-step-validation";
 import { useBuilderStore } from "@/store/builderStore";
 import { useResumeStore } from "@/store/resumeStore";
@@ -16,6 +19,14 @@ const STEP_COMPONENTS = {
   personal: PersonalStep,
   summary: SummaryStep,
   experience: ExperienceStep,
+  skills: () => <ChipsStep section="skills" />,
+  education: () => <ListStep section="education" />,
+  projects: () => <ListStep section="projects" />,
+  hobbies: () => <ChipsStep section="hobbies" />,
+  languages: () => <ListStep section="languages" />,
+  achievements: () => <ListStep section="achievements" />,
+  certifications: () => <ListStep section="certifications" />,
+  preview: ReviewStep,
 };
 
 export default function StepPanel() {
@@ -26,10 +37,11 @@ export default function StepPanel() {
   const uploadedFileName = useResumeStore((state) => state.importedFileName);
   const showImportNotice = Boolean(importedFrom) && importedFrom === uploadedFileName;
 
-  const index = Math.max(0, BUILDER_STEPS.findIndex((step) => step.id === currentStep));
-  const step = BUILDER_STEPS[index];
-  const prev = BUILDER_STEPS[index - 1];
-  const next = BUILDER_STEPS[index + 1];
+  const steps = useBuilderSteps();
+  const index = Math.max(0, steps.findIndex((step) => step.id === currentStep));
+  const step = steps[index];
+  const prev = steps[index - 1];
+  const next = steps[index + 1];
   const StepComponent = STEP_COMPONENTS[step.id];
   const { showErrors, errorCount } = useStepValidation(step.id);
 
@@ -37,8 +49,13 @@ export default function StepPanel() {
     <div className="flex h-full flex-col">
       {/* Keyed by step so each step (and a reset) starts scrolled to the top. */}
       <div key={step.id} className="flex-1 overflow-y-auto px-5 py-6 sm:px-8">
-        <p className="text-xs font-medium text-brand">
-          Step {index + 1} of {BUILDER_STEPS.length}
+        <p className="flex items-center gap-2 text-xs font-medium text-brand">
+          Step {index + 1} of {steps.length}
+          {step.section && !step.required && (
+            <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+              Optional
+            </span>
+          )}
         </p>
         <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground">{step.label}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{step.description}</p>

@@ -1,5 +1,6 @@
 import {
   EB_Garamond,
+  Inter,
   Lato,
   Lora,
   Merriweather,
@@ -10,7 +11,10 @@ import {
   Roboto,
 } from "next/font/google";
 
-// Fonts offered in the resume theme panel (Inter is loaded in the root layout).
+// App font (also a resume font option).
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
+// Other fonts offered in the resume theme panel.
 // preload: false so a font file is only downloaded once a resume actually uses it.
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-resume-roboto", preload: false });
 const openSans = Open_Sans({ subsets: ["latin"], variable: "--font-resume-open-sans", preload: false });
@@ -27,8 +31,9 @@ const lora = Lora({ subsets: ["latin"], variable: "--font-resume-lora", preload:
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-resume-playfair", preload: false });
 const garamond = EB_Garamond({ subsets: ["latin"], variable: "--font-resume-garamond", preload: false });
 
-// Class names that define the CSS variables above; applied once on <html>.
+// Class names that define the CSS variables above. Applied on <html>, and on the print frame's body.
 export const resumeFontVariables = [
+  inter,
   roboto,
   openSans,
   lato,

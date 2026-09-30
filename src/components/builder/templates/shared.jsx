@@ -7,13 +7,15 @@
 
 import { Globe, Mail, MapPin, Phone } from "lucide-react";
 
-import { DEFAULT_THEME, PHOTO_SHAPES, RESUME_FONTS } from "@/constants/builder";
+import { DEFAULT_SECTION_ORDER as DEFAULT_ORDER, DEFAULT_THEME, PHOTO_SHAPES, RESUME_FONTS } from "@/constants/builder";
 import { cn } from "@/lib/utils";
 
 export const tw = {
   root: "min-h-full bg-(--tpl-bg) font-(family-name:--tpl-body-font) text-(length:--tpl-body-size) leading-(--tpl-line-height) text-(--tpl-text)",
   name: "font-(family-name:--tpl-heading-font) text-(length:--tpl-name-size) leading-tight font-bold",
-  heading: "font-(family-name:--tpl-heading-font) text-(length:--tpl-heading-size) leading-snug",
+  heading: "font-(family-name:--tpl-heading-font) text-(length:--tpl-heading-size) leading-snug break-after-avoid",
+  // Keeps an entry (a job, a degree, ...) on one printed page.
+  entry: "break-inside-avoid",
   title: "text-(length:--tpl-title-size)",
   small: "text-(length:--tpl-small-size)",
   strong: "text-(--tpl-text)",
@@ -61,7 +63,11 @@ export function themeStyle(theme = DEFAULT_THEME) {
   };
 }
 
-export const DEFAULT_SECTION_ORDER = ["summary", "experience", "education", "skills", "languages"];
+export const DEFAULT_SECTION_ORDER = ["summary", ...DEFAULT_ORDER];
+
+// Where two-column templates place each section. Order within each column follows the user's order.
+export const SIDE_SECTIONS = ["skills", "languages", "certifications", "hobbies"];
+export const MAIN_SECTIONS = ["summary", "experience", "education", "projects", "achievements"];
 
 export function dateRange({ startDate, endDate }) {
   return [startDate, endDate].filter(Boolean).join(" – ");
@@ -196,7 +202,7 @@ export function ExperienceList({ items, variant = "default" }) {
     return (
       <div className="relative ml-1.5 space-y-4 border-l-2 border-(--tpl)/25 pl-5">
         {items.map((job, i) => (
-          <div key={i} className="relative">
+          <div key={i} className={cn(tw.entry, "relative")}>
             <span className="absolute top-1.5 -left-[27px] size-3 rounded-full border-2 border-(--tpl-bg) bg-(--tpl)" />
             <p className={cn(tw.small, "font-medium text-(--tpl)")}>{dateRange(job)}</p>
             <p className={cn(tw.strong, "font-semibold")}>{job.role}</p>
@@ -211,7 +217,7 @@ export function ExperienceList({ items, variant = "default" }) {
   return (
     <div className="space-y-3">
       {items.map((job, i) => (
-        <div key={i}>
+        <div key={i} className={tw.entry}>
           <div className="flex items-baseline justify-between gap-4">
             <p className={cn(tw.strong, "font-semibold")}>
               {job.role}
@@ -227,16 +233,69 @@ export function ExperienceList({ items, variant = "default" }) {
   );
 }
 
+// Shared layout for dated entries: bold title (+ muted suffix) with the date on the right.
+function EntryHeader({ title, suffix, date }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4">
+      <p className={cn(tw.strong, "font-semibold")}>
+        {title}
+        {suffix && <span className={cn(tw.muted, "font-normal")}> · {suffix}</span>}
+      </p>
+      {date && <p className={cn(tw.small, tw.faint, "shrink-0")}>{date}</p>}
+    </div>
+  );
+}
+
 export function EducationList({ items }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2.5">
       {items.map((edu, i) => (
-        <div key={i}>
-          <div className="flex items-baseline justify-between gap-4">
-            <p className={cn(tw.strong, "font-semibold")}>{edu.degree}</p>
-            <p className={cn(tw.small, tw.faint, "shrink-0")}>{dateRange(edu)}</p>
-          </div>
-          <p className={cn(tw.small, tw.muted)}>{[edu.school, edu.location].filter(Boolean).join(" · ")}</p>
+        <div key={i} className={tw.entry}>
+          <EntryHeader title={edu.degree} date={dateRange(edu)} />
+          <p className={cn(tw.small, tw.muted)}>
+            {[edu.school, edu.location, edu.grade].filter(Boolean).join(" · ")}
+          </p>
+          {edu.description && <p className="mt-0.5 whitespace-pre-line">{edu.description}</p>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function ProjectsList({ items }) {
+  return (
+    <div className="space-y-2.5">
+      {items.map((project, i) => (
+        <div key={i} className={tw.entry}>
+          <EntryHeader title={project.name} suffix={project.role} date={dateRange(project)} />
+          {project.link && <p className={cn(tw.small, "text-(--tpl)")}>{project.link}</p>}
+          {project.description && <p className="mt-0.5 whitespace-pre-line">{project.description}</p>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function AchievementsList({ items }) {
+  return (
+    <div className="space-y-2">
+      {items.map((item, i) => (
+        <div key={i} className={tw.entry}>
+          <EntryHeader title={item.title} date={item.date} />
+          {item.description && <p className="whitespace-pre-line">{item.description}</p>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function CertificationsList({ items }) {
+  return (
+    <div className="space-y-2">
+      {items.map((cert, i) => (
+        <div key={i} className={tw.entry}>
+          <EntryHeader title={cert.name} suffix={cert.issuer} date={cert.date} />
+          {cert.link && <p className={cn(tw.small, tw.faint)}>{cert.link}</p>}
         </div>
       ))}
     </div>
@@ -309,6 +368,14 @@ export function LanguagesList({ items, variant = "inline" }) {
 
 function renderSection(key, resume, variants) {
   switch (key) {
+    case "projects":
+      return resume.projects?.length ? <ProjectsList items={resume.projects} /> : null;
+    case "achievements":
+      return resume.achievements?.length ? <AchievementsList items={resume.achievements} /> : null;
+    case "certifications":
+      return resume.certifications?.length ? <CertificationsList items={resume.certifications} /> : null;
+    case "hobbies":
+      return resume.hobbies?.length ? <SkillsList items={resume.hobbies} variant={variants.hobbies ?? "inline"} /> : null;
     case "summary":
       return resume.summary ? <p className="whitespace-pre-line">{resume.summary}</p> : null;
     case "experience":
@@ -328,10 +395,12 @@ function renderSection(key, resume, variants) {
   }
 }
 
-// Renders each non-empty section inside the template's own `Section({ title, children })` wrapper.
+// Renders each non-empty section, in the user's order, inside the template's own
+// `Section({ title, children })` wrapper. `only` limits it to a column's sections (two-column layouts).
 // Titles come from `resume.sectionTitles`, already resolved (user > template > default) by getTemplate().
-export function ResumeSections({ resume, Section, sections = DEFAULT_SECTION_ORDER, variants = {} }) {
-  return sections.map((key) => {
+export function ResumeSections({ resume, Section, only, variants = {} }) {
+  const order = resume.sectionOrder ?? DEFAULT_SECTION_ORDER;
+  return (only ? order.filter((key) => only.includes(key)) : order).map((key) => {
     const content = renderSection(key, resume, variants);
     if (!content) return null;
     return (

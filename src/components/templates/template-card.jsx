@@ -1,11 +1,14 @@
 "use client";
 
+import { Eye } from "lucide-react";
+
 import ScaledPage from "@/components/builder/scaled-page";
 import FavoriteButton from "@/components/templates/favorite-button";
+import { Button } from "@/components/ui/button";
 import { SAMPLE_RESUME } from "@/constants/sample-resume";
 import { cn } from "@/lib/utils";
 
-export default function TemplateCard({ template, theme, isCurrent, onChoose }) {
+export default function TemplateCard({ template, theme, isCurrent, onChoose, onPreview }) {
   const { Component } = template;
 
   return (
@@ -24,14 +27,26 @@ export default function TemplateCard({ template, theme, isCurrent, onChoose }) {
           <ScaledPage clip>
             <Component resume={SAMPLE_RESUME} theme={theme} />
           </ScaledPage>
-
-          {/* Always visible on touch screens; revealed on hover / focus on larger screens. */}
-          <div className="absolute inset-x-0 bottom-0 flex justify-center bg-gradient-to-t from-black/25 to-transparent pt-16 pb-5 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-            <span className="rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-foreground shadow-lg">
-              Choose template
-            </span>
-          </div>
         </button>
+
+        {/* Always visible on touch screens; revealed on hover / focus on larger screens.
+            The strip ignores pointer events so clicks around the buttons still choose the template. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center gap-2 rounded-b-xl bg-gradient-to-t from-black/25 to-transparent pt-16 pb-5 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+          <Button
+            variant="outline"
+            onClick={() => onPreview(template)}
+            className="pointer-events-auto h-10 rounded-full border-white bg-white px-4 text-neutral-900 shadow-lg hover:bg-neutral-100 hover:text-neutral-900 dark:border-white dark:bg-white dark:hover:bg-neutral-100"
+          >
+            <Eye />
+            Preview
+          </Button>
+          <Button
+            onClick={() => onChoose(template)}
+            className="pointer-events-auto h-10 rounded-full bg-brand px-5 font-semibold text-brand-foreground shadow-lg hover:bg-brand/90"
+          >
+            Choose template
+          </Button>
+        </div>
 
         {/* Sibling of the card button (buttons can't nest). */}
         <FavoriteButton templateId={template.id} templateName={template.name} className="absolute top-3 right-3" />

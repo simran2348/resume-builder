@@ -1,4 +1,4 @@
-import { ContactList, Name, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { ContactList, MAIN_SECTIONS, Name, ResumeSections, SIDE_SECTIONS, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
 import { cn } from "@/lib/utils";
 
 // Full-width header, then a wide main column and a tinted side panel for skills and languages.
@@ -6,7 +6,7 @@ export default function SplitTemplate({ resume, theme }) {
   const { personal } = resume;
   const contacts = getContacts(personal);
   const links = getLinks(personal);
-  const hasSide = resume.skills?.length > 0 || resume.languages?.length > 0 || links.length > 0;
+  const hasSide = links.length > 0 || SIDE_SECTIONS.some((key) => resume[key]?.length && resume.sectionOrder.includes(key));
 
   return (
     <div style={themeStyle(theme)} className={cn(tw.root, tw.padX, tw.padY)}>
@@ -18,7 +18,7 @@ export default function SplitTemplate({ resume, theme }) {
 
       <div className={hasSide ? "grid grid-cols-[1fr_210px] gap-8" : ""}>
         <div className="min-w-0">
-          <ResumeSections resume={resume} Section={Section} sections={["summary", "experience", "education"]} />
+          <ResumeSections resume={resume} Section={Section} only={MAIN_SECTIONS} />
         </div>
 
         {hasSide && (
@@ -31,8 +31,8 @@ export default function SplitTemplate({ resume, theme }) {
             <ResumeSections
               resume={resume}
               Section={Section}
-              sections={["skills", "languages"]}
-              variants={{ skills: "tags", languages: "bars" }}
+              only={SIDE_SECTIONS}
+              variants={{ skills: "tags", languages: "bars", hobbies: "tags" }}
             />
           </aside>
         )}

@@ -1,13 +1,7 @@
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "../context/ThemeContext";
 import { resumeFontVariables } from "@/lib/resume-fonts";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
 export const metadata = {
   title: "Create Next App",
@@ -16,7 +10,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} ${resumeFontVariables} h-full antialiased`}>
+    <html lang="en" className={`${resumeFontVariables} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <TooltipProvider>{children}</TooltipProvider>

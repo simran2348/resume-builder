@@ -5,8 +5,8 @@ import { Check, House, Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { BUILDER_STEPS } from "@/constants/builder";
 import { useTheme } from "@/context/ThemeContext";
+import { useBuilderSteps } from "@/hooks/use-builder-steps";
 import { useStepValidation } from "@/hooks/use-step-validation";
 import { cn } from "@/lib/utils";
 import { useBuilderStore } from "@/store/builderStore";
@@ -15,7 +15,8 @@ export default function BuilderSidebar() {
   const { theme, toggleTheme } = useTheme();
   const currentStep = useBuilderStore((state) => state.currentStep);
   const setStep = useBuilderStore((state) => state.setStep);
-  const currentIndex = BUILDER_STEPS.findIndex((step) => step.id === currentStep);
+  const steps = useBuilderSteps();
+  const currentIndex = steps.findIndex((step) => step.id === currentStep);
 
   return (
     <aside className="flex items-center gap-3 border-b border-border bg-background px-3 py-2 lg:h-full lg:flex-col lg:border-r lg:border-b-0 lg:px-0 lg:py-4">
@@ -30,14 +31,18 @@ export default function BuilderSidebar() {
         <TooltipContent side="right">Home</TooltipContent>
       </Tooltip>
 
-      <nav aria-label="Resume steps" className="flex flex-1 justify-center lg:mt-6 lg:justify-start">
-        <ol className="flex items-center lg:flex-col">
-          {BUILDER_STEPS.map((step, index) => (
+      {/* Scrolls when there are more steps than fit (horizontally on small screens). */}
+      <nav
+        aria-label="Resume steps"
+        className="flex min-w-0 flex-1 overflow-x-auto py-1 lg:mt-4 lg:min-h-0 lg:w-full lg:flex-col lg:items-center lg:overflow-x-visible lg:overflow-y-auto lg:py-1"
+      >
+        <ol className="mx-auto flex items-center px-1 lg:flex-col lg:px-0">
+          {steps.map((step, index) => (
             <li key={step.id} className="flex items-center lg:flex-col">
               {index > 0 && (
                 <span
                   aria-hidden
-                  className={cn("h-0.5 w-5 sm:w-8 lg:h-6 lg:w-0.5", index <= currentIndex ? "bg-brand" : "bg-border")}
+                  className={cn("h-0.5 w-3 shrink-0 sm:w-4 lg:h-3 lg:w-0.5", index <= currentIndex ? "bg-brand" : "bg-border")}
                 />
               )}
               <StepMarker step={step} index={index} isActive={index === currentIndex} onSelect={() => setStep(step.id)} />
@@ -66,7 +71,7 @@ function StepMarker({ step, index, isActive, onSelect }) {
   const { visited, isValid } = useStepValidation(step.id);
   const status = !visited ? "untouched" : isValid ? "complete" : "error";
 
-  const label = `Step ${index + 1}: ${step.label}${status === "error" ? " (missing required fields)" : status === "complete" ? " (complete)" : ""}`;
+  const label = `Step ${index + 1}: ${step.label}${step.section && !step.required ? " (optional)" : ""}${status === "error" ? " (missing required fields)" : status === "complete" ? " (complete)" : ""}`;
 
   return (
     <Tooltip>
@@ -75,7 +80,7 @@ function StepMarker({ step, index, isActive, onSelect }) {
         aria-label={label}
         aria-current={isActive ? "step" : undefined}
         className={cn(
-          "relative flex size-10 items-center justify-center rounded-xl border transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/40",
+          "relative flex size-10 shrink-0 items-center justify-center rounded-xl border transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/40",
           isActive && status !== "error" && "border-brand bg-brand text-brand-foreground shadow-sm",
           isActive && status === "error" && "border-red-500 bg-red-500 text-white shadow-sm",
           !isActive && status === "complete" && "border-brand/30 bg-brand-glow text-brand hover:border-brand/60",
@@ -97,6 +102,7 @@ function StepMarker({ step, index, isActive, onSelect }) {
       </TooltipTrigger>
       <TooltipContent side="right">
         {step.label}
+        {step.section && !step.required && " (optional)"}
         {status === "error" && " · missing required fields"}
       </TooltipContent>
     </Tooltip>
