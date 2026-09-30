@@ -2,10 +2,11 @@
 
 import { Lightbulb } from "lucide-react";
 
+import RichTextarea from "@/components/builder/rich-textarea";
 import { FieldError } from "@/components/builder/steps/personal-step";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { SUMMARY_CONFIG } from "@/constants/builder";
+import { stripRichText } from "@/lib/rich-text";
 import { useStepValidation } from "@/hooks/use-step-validation";
 import { cn } from "@/lib/utils";
 import { useBuilderStore } from "@/store/builderStore";
@@ -17,7 +18,7 @@ export default function SummaryStep() {
   const { errors, visited } = useStepValidation("summary");
   const error = visited && errors.summary;
   const { recommendedMin, recommendedMax } = SUMMARY_CONFIG;
-  const length = summary.trim().length;
+  const length = stripRichText(summary).trim().length;
   const inRange = length >= recommendedMin && length <= recommendedMax;
 
   return (
@@ -26,10 +27,10 @@ export default function SummaryStep() {
         <Label htmlFor="summary">
           Summary<span className="text-destructive">*</span>
         </Label>
-        <Textarea
+        <RichTextarea
           id="summary"
           value={summary}
-          onChange={(e) => setSummary(e.target.value)}
+          onChange={setSummary}
           placeholder={SUMMARY_CONFIG.placeholder}
           className="min-h-44 leading-relaxed"
           required
@@ -42,6 +43,10 @@ export default function SummaryStep() {
           className={cn("text-right text-xs", inRange ? "text-brand" : "text-muted-foreground")}
         >
           {length} characters · recommended {recommendedMin}–{recommendedMax}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Select text and press <kbd className="font-sans font-medium">Ctrl/⌘ + B</kbd> for bold or{" "}
+          <kbd className="font-sans font-medium">Ctrl/⌘ + I</kbd> for italic, or use the toolbar.
         </p>
       </div>
 

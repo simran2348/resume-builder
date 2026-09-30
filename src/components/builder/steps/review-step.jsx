@@ -26,6 +26,7 @@ import {
   Undo2,
 } from "lucide-react";
 
+import PagedDocument from "@/components/builder/paged-document";
 import { getDefaultSectionTitle, getTemplate } from "@/components/builder/templates";
 import { Button } from "@/components/ui/button";
 import { useResumeContent } from "@/hooks/use-resume-content";
@@ -36,10 +37,11 @@ import { cn } from "@/lib/utils";
 import { getStepErrors } from "@/lib/validation";
 import { useBuilderStore } from "@/store/builderStore";
 
-// A4 page, no browser headers/footers; later pages get a top margin since only page 1 has the template's padding.
+// The print copy is already split into exact A4 sheets (same page breaks and padding as the preview),
+// so the printer adds no margins of its own. This keeps the PDF identical whatever the print dialog's
+// "Margins" setting is (e.g. "None", which people pick to hide the browser's date / URL headers).
 const PRINT_PAGE_STYLE = `
-  @page { size: A4; margin: 12mm 0; }
-  @page :first { margin-top: 0; }
+  @page { size: A4; margin: 0; }
   html, body { margin: 0; background: #fff; }
   body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 `;
@@ -69,7 +71,7 @@ export default function ReviewStep() {
   const templateId = useBuilderStore((state) => state.templateId);
   const theme = useBuilderStore((state) => state.theme);
   const setStep = useBuilderStore((state) => state.setStep);
-  const { Component } = getTemplate(templateId);
+  const template = getTemplate(templateId);
   const printRef = useRef(null);
 
   const fileBase = (data.personal.fullName.trim() || "Resume").replace(/\s+/g, "_");
@@ -142,12 +144,8 @@ export default function ReviewStep() {
         </div>
       </section>
 
-      {/* Full-size, unscaled copy used for printing / PDF (hidden on screen). */}
-      <div className="hidden">
-        <div ref={printRef} style={{ width: "210mm" }}>
-          <Component resume={resume} theme={theme} />
-        </div>
-      </div>
+      {/* Print copy (hidden on screen): exact A4 sheets with the same page breaks as the preview. */}
+      <PagedDocument template={template} resume={resume} theme={theme} print hidden pagesRef={printRef} />
     </div>
   );
 }

@@ -2,14 +2,13 @@
 
 import { Eye } from "lucide-react";
 
-import ScaledPage from "@/components/builder/scaled-page";
+import PagedDocument, { FitWidth } from "@/components/builder/paged-document";
 import FavoriteButton from "@/components/templates/favorite-button";
 import { Button } from "@/components/ui/button";
 import { SAMPLE_RESUME } from "@/constants/sample-resume";
 import { cn } from "@/lib/utils";
 
 export default function TemplateCard({ template, theme, isCurrent, onChoose, onPreview }) {
-  const { Component } = template;
 
   return (
     <div className="group">
@@ -24,9 +23,10 @@ export default function TemplateCard({ template, theme, isCurrent, onChoose, onP
             isCurrent ? "border-brand ring-1 ring-brand" : "border-border"
           )}
         >
-          <ScaledPage clip>
-            <Component resume={SAMPLE_RESUME} theme={theme} />
-          </ScaledPage>
+          {/* First page, with the same page break and bottom margin as the real resume. */}
+          <FitWidth>
+            {(scale) => <PagedDocument template={template} resume={SAMPLE_RESUME} theme={theme} scale={scale} maxPages={1} />}
+          </FitWidth>
         </button>
 
         {/* Always visible on touch screens; revealed on hover / focus on larger screens.

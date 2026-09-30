@@ -3,9 +3,9 @@ import CenteredTemplate from "@/components/builder/templates/centered-template";
 import ClassicTemplate from "@/components/builder/templates/classic-template";
 import ElegantTemplate from "@/components/builder/templates/elegant-template";
 import MinimalTemplate from "@/components/builder/templates/minimal-template";
-import ProfileTemplate from "@/components/builder/templates/profile-template";
+import ProfileTemplate, { ProfilePageBackground } from "@/components/builder/templates/profile-template";
 import SideHeadingsTemplate from "@/components/builder/templates/side-headings-template";
-import SidebarTemplate from "@/components/builder/templates/sidebar-template";
+import SidebarTemplate, { SidebarPageBackground } from "@/components/builder/templates/sidebar-template";
 import SplitTemplate from "@/components/builder/templates/split-template";
 import TimelineTemplate from "@/components/builder/templates/timeline-template";
 import {
@@ -34,6 +34,12 @@ const TEMPLATE_COMPONENTS = {
   sidebar: SidebarTemplate,
   split: SplitTemplate,
   profile: ProfileTemplate,
+};
+
+// Optional per-page decoration drawn at full page height behind the content (see PagedDocument).
+const PAGE_BACKGROUNDS = {
+  sidebar: SidebarPageBackground,
+  profile: ProfilePageBackground,
 };
 
 // Resolves per-template defaults before rendering: theme (contact icons) and section titles
@@ -68,7 +74,7 @@ export function getDefaultSectionTitle(templateId, section) {
 
 export function getTemplate(templateId) {
   const meta = RESUME_TEMPLATES.find((t) => t.id === templateId) ?? RESUME_TEMPLATES[0];
-  return { ...meta, Component: RESOLVED_COMPONENTS[meta.id] };
+  return { ...meta, Component: RESOLVED_COMPONENTS[meta.id], PageBackground: PAGE_BACKGROUNDS[meta.id] };
 }
 
 export const ALL_TEMPLATES = RESUME_TEMPLATES.map((t) => getTemplate(t.id));

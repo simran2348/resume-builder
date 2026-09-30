@@ -6,6 +6,7 @@ import {
   LANGUAGE_LEVELS,
   LIST_SECTIONS,
 } from "@/constants/builder";
+import { stripRichText } from "@/lib/rich-text";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -255,5 +256,5 @@ export function toPlainText(resume) {
     const body = renderers[key]?.() ?? [];
     if (body.length) lines.push("", titleFor(key).toUpperCase(), ...body);
   }
-  return lines.join("\n");
+  return stripRichText(lines.join("\n"));
 }

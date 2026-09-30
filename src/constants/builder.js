@@ -375,7 +375,8 @@ export const EXPERIENCE_FIELDS = [
 
 export const EXPERIENCE_CONFIG = {
   bulletPlaceholder: "Led a team of 5 engineers to rebuild checkout, increasing conversion by 18%.",
-  bulletTip: "Start each point with an action verb and add numbers where you can. Press Enter for a new point.",
+  bulletTip:
+    "Start each point with an action verb and add numbers where you can. Press Enter for a new point; Ctrl/⌘+B or Ctrl/⌘+I for bold or italic.",
   // How far back the year pickers go.
   yearsBack: 50,
 };

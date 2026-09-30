@@ -14,7 +14,8 @@ export default function SidebarTemplate({ resume, theme }) {
 
   return (
     <div style={themeStyle(theme)} className={cn(tw.root, "grid min-h-[1123px] grid-cols-[240px_1fr]")}>
-      <aside className="bg-(--tpl) px-7 py-(--tpl-margin) text-white/90">
+      {/* The column colour comes from SidebarPageBackground (full height on every page, no seams). */}
+      <aside className="px-7 py-(--tpl-margin) text-white/90">
         <Photo src={personal.photo} className="mx-auto size-32" />
 
         {details.length > 0 && (
@@ -67,5 +68,14 @@ function Section({ title, children }) {
       <h2 className={cn(tw.heading, "mb-2 font-bold tracking-[0.14em] text-(--tpl) uppercase")}>{title}</h2>
       {children}
     </section>
+  );
+}
+
+// Drawn behind every page at full height so the coloured column runs top to bottom on each page.
+export function SidebarPageBackground({ theme }) {
+  return (
+    <div style={themeStyle(theme)} className="grid h-full grid-cols-[240px_1fr]">
+      <div className="bg-(--tpl)" />
+    </div>
   );
 }

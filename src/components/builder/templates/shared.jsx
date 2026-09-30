@@ -8,10 +8,12 @@
 import { Globe, Mail, MapPin, Phone } from "lucide-react";
 
 import { DEFAULT_SECTION_ORDER as DEFAULT_ORDER, DEFAULT_THEME, PHOTO_SHAPES, RESUME_FONTS } from "@/constants/builder";
+import { parseRichText } from "@/lib/rich-text";
 import { cn } from "@/lib/utils";
 
 export const tw = {
-  root: "min-h-full bg-(--tpl-bg) font-(family-name:--tpl-body-font) text-(length:--tpl-body-size) leading-(--tpl-line-height) text-(--tpl-text)",
+  // No background here: PagedDocument paints the page colour, with any PageBackground layered on top.
+  root: "min-h-full font-(family-name:--tpl-body-font) text-(length:--tpl-body-size) leading-(--tpl-line-height) text-(--tpl-text)",
   name: "font-(family-name:--tpl-heading-font) text-(length:--tpl-name-size) leading-tight font-bold",
   heading: "font-(family-name:--tpl-heading-font) text-(length:--tpl-heading-size) leading-snug break-after-avoid",
   // Keeps an entry (a job, a degree, ...) on one printed page.
@@ -102,6 +104,35 @@ function GitHubIcon(props) {
   );
 }
 
+// Turns a contact value into a link target: mail app for email, dialer for phone, web page for links.
+// Kept as real <a> elements so they stay clickable in the downloaded PDF.
+export function toHref(type, value) {
+  const text = value.trim();
+  if (!text) return null;
+  if (type === "email") return text.includes("@") ? `mailto:${text}` : null;
+  if (type === "phone") {
+    const digits = text.replace(/[^\d+]/g, "");
+    return digits ? `tel:${digits}` : null;
+  }
+  if (type === "location") return null;
+  return /^https?:\/\//i.test(text) ? text : `https://${text.replace(/^\/+/, "")}`;
+}
+
+// Link that looks like the surrounding text; web links open in a new tab.
+export function ResumeLink({ href, children, className }) {
+  if (!href) return <span className={className}>{children}</span>;
+  const external = href.startsWith("http");
+  return (
+    <a
+      href={href}
+      className={cn("text-inherit no-underline hover:underline", className)}
+      {...(external && { target: "_blank", rel: "noopener noreferrer" })}
+    >
+      {children}
+    </a>
+  );
+}
+
 const CONTACT_ICONS = {
   email: Mail,
   phone: Phone,
@@ -122,7 +153,9 @@ export function ContactList({ items, theme, layout = "inline", separator = "|", 
     return (
       <span className="inline-flex min-w-0 items-center gap-1.5">
         {showIcons && Icon && <Icon className={cn("size-[1.05em] shrink-0 text-(--tpl)", iconClassName)} />}
-        <span className="break-words">{item.value}</span>
+        <ResumeLink href={toHref(item.type, item.value)} className="break-words">
+          {item.value}
+        </ResumeLink>
       </span>
     );
   };
@@ -169,6 +202,7 @@ export function Name({ value, className }) {
 export function Photo({ src, className }) {
   return (
     <div
+      data-block
       className={cn(
         "shrink-0 overflow-hidden rounded-(--tpl-photo-radius) border-(length:--tpl-photo-border) border-solid border-(--tpl-photo-border-color) bg-neutral-200",
         className
@@ -186,12 +220,24 @@ export function Photo({ src, className }) {
   );
 }
 
+// Renders **bold** / *italic* markers from the editor as real formatting.
+export function RichText({ text }) {
+  return parseRichText(text).map((segment, i) => {
+    let node = segment.text;
+    if (segment.italic) node = <em>{node}</em>;
+    if (segment.bold) node = <strong className="font-semibold">{node}</strong>;
+    return <span key={i}>{node}</span>;
+  });
+}
+
 export function Bullets({ items, className }) {
   if (!items?.length) return null;
   return (
     <ul className={cn("mt-1 list-disc space-y-0.5 pl-4 marker:text-(--tpl-text)/40", className)}>
       {items.map((item, i) => (
-        <li key={i}>{item}</li>
+        <li key={i}>
+          <RichText text={item} />
+        </li>
       ))}
     </ul>
   );
@@ -255,7 +301,11 @@ export function EducationList({ items }) {
           <p className={cn(tw.small, tw.muted)}>
             {[edu.school, edu.location, edu.grade].filter(Boolean).join(" · ")}
           </p>
-          {edu.description && <p className="mt-0.5 whitespace-pre-line">{edu.description}</p>}
+          {edu.description && (
+            <p className="mt-0.5 whitespace-pre-line">
+              <RichText text={edu.description} />
+            </p>
+          )}
         </div>
       ))}
     </div>
@@ -268,8 +318,16 @@ export function ProjectsList({ items }) {
       {items.map((project, i) => (
         <div key={i} className={tw.entry}>
           <EntryHeader title={project.name} suffix={project.role} date={dateRange(project)} />
-          {project.link && <p className={cn(tw.small, "text-(--tpl)")}>{project.link}</p>}
-          {project.description && <p className="mt-0.5 whitespace-pre-line">{project.description}</p>}
+          {project.link && (
+            <p className={cn(tw.small, "text-(--tpl)")}>
+              <ResumeLink href={toHref("link", project.link)}>{project.link}</ResumeLink>
+            </p>
+          )}
+          {project.description && (
+            <p className="mt-0.5 whitespace-pre-line">
+              <RichText text={project.description} />
+            </p>
+          )}
         </div>
       ))}
     </div>
@@ -282,7 +340,11 @@ export function AchievementsList({ items }) {
       {items.map((item, i) => (
         <div key={i} className={tw.entry}>
           <EntryHeader title={item.title} date={item.date} />
-          {item.description && <p className="whitespace-pre-line">{item.description}</p>}
+          {item.description && (
+            <p className="whitespace-pre-line">
+              <RichText text={item.description} />
+            </p>
+          )}
         </div>
       ))}
     </div>
@@ -295,7 +357,11 @@ export function CertificationsList({ items }) {
       {items.map((cert, i) => (
         <div key={i} className={tw.entry}>
           <EntryHeader title={cert.name} suffix={cert.issuer} date={cert.date} />
-          {cert.link && <p className={cn(tw.small, tw.faint)}>{cert.link}</p>}
+          {cert.link && (
+            <p className={cn(tw.small, tw.faint)}>
+              <ResumeLink href={toHref("link", cert.link)}>{cert.link}</ResumeLink>
+            </p>
+          )}
         </div>
       ))}
     </div>
@@ -377,7 +443,11 @@ function renderSection(key, resume, variants) {
     case "hobbies":
       return resume.hobbies?.length ? <SkillsList items={resume.hobbies} variant={variants.hobbies ?? "inline"} /> : null;
     case "summary":
-      return resume.summary ? <p className="whitespace-pre-line">{resume.summary}</p> : null;
+      return resume.summary ? (
+        <p className="whitespace-pre-line">
+          <RichText text={resume.summary} />
+        </p>
+      ) : null;
     case "experience":
       return resume.experience?.length ? (
         <ExperienceList items={resume.experience} variant={variants.experience} />

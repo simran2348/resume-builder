@@ -59,3 +59,13 @@ function Section({ title, children }) {
     </section>
   );
 }
+
+// Continues the column divider down every page after the first (page 1 has the header across the top).
+export function ProfilePageBackground({ theme, pageIndex }) {
+  if (pageIndex === 0) return null;
+  return (
+    <div style={themeStyle(theme)} className="h-full py-(--tpl-margin)">
+      <div className="ml-[calc(var(--tpl-margin)+200px-1px)] h-full w-px bg-(--tpl-divider)" />
+    </div>
+  );
+}

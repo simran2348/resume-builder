@@ -10,7 +10,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Plus, X } from "lucide-react";
 
-import AutoTextarea from "@/components/builder/auto-textarea";
+import RichTextarea from "@/components/builder/rich-textarea";
 import { Button } from "@/components/ui/button";
 import { EXPERIENCE_CONFIG } from "@/constants/builder";
 import { cn } from "@/lib/utils";
@@ -115,10 +115,10 @@ function BulletRow({ bullet, index, canRemove, onChange, onRemove, onKeyDown }) 
       >
         <GripVertical className="size-4" />
       </button>
-      <AutoTextarea
+      <RichTextarea
         id={bulletInputId(bullet.id)}
         value={bullet.text}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={onChange}
         onKeyDown={onKeyDown}
         placeholder={index === 0 ? EXPERIENCE_CONFIG.bulletPlaceholder : "Another achievement or responsibility"}
         aria-label={`Bullet point ${index + 1}`}

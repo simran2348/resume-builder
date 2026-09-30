@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Eraser, LayoutTemplate, Maximize, Minus, Paintbrush, Plus, RotateCcw } from "lucide-react";
 
-import { PAGE_HEIGHT, PAGE_WIDTH } from "@/components/builder/scaled-page";
+import PagedDocument, { PAGE_HEIGHT, PAGE_WIDTH } from "@/components/builder/paged-document";
 import SidePanel from "@/components/builder/side-panel";
 import TemplatesPanel from "@/components/builder/templates-panel";
 import ThemePanel from "@/components/builder/theme-panel";
@@ -32,11 +32,9 @@ const MAX_ZOOM = 2;
 
 export default function PreviewPanel() {
   const frameRef = useRef(null);
-  const contentRef = useRef(null);
   const [fitScale, setFitScale] = useState(0);
   // null = auto-fit the whole page; otherwise a fixed scale chosen with the zoom bar.
   const [zoom, setZoom] = useState(null);
-  const [pageCount, setPageCount] = useState(1);
   const [activePanel, setActivePanel] = useState(null); // null | "templates" | "theme"
   const [confirmReset, setConfirmReset] = useState(false);
 
@@ -62,7 +60,7 @@ export default function PreviewPanel() {
     setActivePanel(null);
     setConfirmReset(false);
   }
-  const { Component } = getTemplate(templateId);
+  const template = getTemplate(templateId);
 
   // Fit one full page into the frame; re-runs as side panels open/close and the frame resizes.
   useEffect(() => {
@@ -76,15 +74,6 @@ export default function PreviewPanel() {
     return () => observer.disconnect();
   }, []);
 
-  // Add pages as the content grows past one A4 page.
-  useEffect(() => {
-    const content = contentRef.current;
-    const observer = new ResizeObserver(() => {
-      setPageCount(Math.max(1, Math.ceil((content.scrollHeight - 1) / PAGE_HEIGHT)));
-    });
-    observer.observe(content);
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     if (!activePanel) return;
@@ -103,35 +92,15 @@ export default function PreviewPanel() {
       <div ref={frameRef} className="relative min-w-0 flex-1 bg-muted/40">
         <div className="absolute inset-0 flex overflow-auto px-6 py-14">
           {/* m-auto centres the pages but still lets them scroll when zoomed past the frame. */}
-          <div className={cn("m-auto flex flex-col gap-6", !scale && "invisible")}>
-            {Array.from({ length: pageCount }, (_, page) => (
-              <div
-                key={page}
-                className="shrink-0 overflow-hidden shadow-lg ring-1 ring-black/5"
-                style={{ width: PAGE_WIDTH * scale, height: PAGE_HEIGHT * scale }}
-              >
-                <div
-                  className="origin-top-left overflow-hidden"
-                  style={{
-                    width: PAGE_WIDTH,
-                    height: PAGE_HEIGHT,
-                    transform: `scale(${scale})`,
-                    backgroundColor: theme.background,
-                  }}
-                >
-                  {/* Each page shows the next A4-sized slice of the same content. */}
-                  <div
-                    ref={page === 0 ? contentRef : undefined}
-                    style={{ transform: `translateY(-${page * PAGE_HEIGHT}px)` }}
-                    aria-hidden={page > 0 || isEmpty}
-                    className={cn(isEmpty && "opacity-45")}
-                  >
-                    <Component resume={resume} theme={theme} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <PagedDocument
+            template={template}
+            resume={resume}
+            theme={theme}
+            scale={scale || 1}
+            dimmed={isEmpty}
+            className={cn("m-auto", !scale && "invisible")}
+            pageClassName="shadow-lg ring-1 ring-black/5"
+          />
         </div>
 
         {isEmpty && (

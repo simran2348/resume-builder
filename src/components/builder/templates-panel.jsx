@@ -2,7 +2,7 @@
 
 import { Check } from "lucide-react";
 
-import ScaledPage from "@/components/builder/scaled-page";
+import PagedDocument, { FitWidth } from "@/components/builder/paged-document";
 import { ALL_TEMPLATES } from "@/components/builder/templates";
 import FavoriteButton from "@/components/templates/favorite-button";
 import { SAMPLE_RESUME } from "@/constants/sample-resume";
@@ -25,7 +25,6 @@ export default function TemplatesPanel() {
     <div role="radiogroup" aria-label="Templates" className="space-y-5 p-5">
       {templates.map((template) => {
         const isSelected = template.id === templateId;
-        const { Component } = template;
         return (
           <div key={template.id} className="relative">
             <button
@@ -41,9 +40,11 @@ export default function TemplatesPanel() {
                   isSelected ? "border-brand ring-2 ring-brand" : "border-border group-hover:border-brand/50"
                 )}
               >
-                <ScaledPage clip>
-                  <Component resume={SAMPLE_RESUME} theme={thumbTheme} />
-                </ScaledPage>
+                <FitWidth>
+                  {(scale) => (
+                    <PagedDocument template={template} resume={SAMPLE_RESUME} theme={thumbTheme} scale={scale} maxPages={1} />
+                  )}
+                </FitWidth>
                 {isSelected && (
                   <span className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-brand text-brand-foreground shadow">
                     <Check className="size-3.5" strokeWidth={3} />

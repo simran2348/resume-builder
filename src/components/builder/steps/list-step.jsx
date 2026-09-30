@@ -11,8 +11,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { ChevronDown, GripVertical, Plus, Trash2, X } from "lucide-react";
 
-import AutoTextarea from "@/components/builder/auto-textarea";
 import MonthYearPicker from "@/components/builder/month-year-picker";
+import RichTextarea from "@/components/builder/rich-textarea";
 import { FieldError } from "@/components/builder/steps/personal-step";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -296,10 +296,10 @@ function Field({ section, item, field, error, hideLabel = false }) {
     control = <MonthYearPicker label={field.label} value={item[field.name]} onChange={update} disabled={disabled} />;
   } else if (field.type === "textarea") {
     control = (
-      <AutoTextarea
+      <RichTextarea
         id={id}
         value={item[field.name]}
-        onChange={(e) => update(e.target.value)}
+        onChange={update}
         placeholder={field.placeholder}
         className="min-h-20 bg-background leading-relaxed"
       />

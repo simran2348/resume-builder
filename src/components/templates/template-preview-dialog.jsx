@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import ScaledPage from "@/components/builder/scaled-page";
+import PagedDocument, { FitWidth } from "@/components/builder/paged-document";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { SAMPLE_RESUME } from "@/constants/sample-resume";
@@ -37,9 +37,18 @@ export default function TemplatePreviewDialog({ templates, index, onIndexChange,
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto bg-muted/50 p-4 sm:p-6">
-            <ScaledPage key={template.id} className="mx-auto max-w-[640px] shadow-lg ring-1 ring-black/5">
-              <template.Component resume={SAMPLE_RESUME} theme={theme} />
-            </ScaledPage>
+            <FitWidth key={template.id} className="mx-auto max-w-[640px]">
+              {(scale) => (
+                <PagedDocument
+                  template={template}
+                  resume={SAMPLE_RESUME}
+                  theme={theme}
+                  scale={scale}
+                  gap={16}
+                  pageClassName="shadow-lg ring-1 ring-black/5"
+                />
+              )}
+            </FitWidth>
           </div>
 
           <div className="flex items-center justify-between gap-2 border-t border-border px-5 py-3">
