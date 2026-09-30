@@ -1,13 +1,8 @@
-import { FileText, LayoutTemplate, UserRound } from "lucide-react";
+import { FileText, UserRound } from "lucide-react";
 
 // Order here is the order shown in the sidebar and used by Back / Next.
+// Choosing a template happens before these steps, on the standalone /templates screen.
 export const BUILDER_STEPS = [
-  {
-    id: "template",
-    label: "Choose template",
-    description: "Pick a layout. You can switch at any time without losing your details.",
-    icon: LayoutTemplate,
-  },
   {
     id: "personal",
     label: "Personal details",
@@ -22,23 +17,129 @@ export const BUILDER_STEPS = [
   },
 ];
 
-// `supportsPhoto` controls whether the photo upload shows in Personal details.
+// Accent colours offered on the templates screen. `value` is applied to headings, rules and highlights.
+export const ACCENT_COLORS = [
+  { id: "charcoal", name: "Charcoal", value: "#1f2937" },
+  { id: "navy", name: "Navy", value: "#1e3a8a" },
+  { id: "blue", name: "Blue", value: "#2563eb" },
+  { id: "teal", name: "Teal", value: "#0f766e" },
+  { id: "green", name: "Green", value: "#166534" },
+  { id: "maroon", name: "Maroon", value: "#9f1239" },
+  { id: "purple", name: "Purple", value: "#6d28d9" },
+  { id: "orange", name: "Orange", value: "#c2410c" },
+];
+
+// `supportsPhoto` controls the headshot filter and whether the photo upload shows in Personal details.
+// `columns` drives the columns filter. `defaultColor` is an ACCENT_COLORS id.
 export const RESUME_TEMPLATES = [
   {
     id: "classic",
     name: "Classic",
     description: "Single column, top to bottom. The safest choice for ATS scanners.",
     supportsPhoto: false,
+    columns: 1,
+    recommended: true,
+    defaultColor: "charcoal",
+  },
+  {
+    id: "elegant",
+    name: "Elegant",
+    description: "Centered serif header with a monogram. Timeless and formal.",
+    supportsPhoto: false,
+    columns: 1,
+    recommended: true,
+    defaultColor: "blue",
+  },
+  {
+    id: "side-headings",
+    name: "Executive",
+    description: "Section titles in a left gutter with a headshot up top.",
+    supportsPhoto: true,
+    columns: 1,
+    recommended: true,
+    defaultColor: "blue",
+  },
+  {
+    id: "banner",
+    name: "Banner",
+    description: "Bold coloured header band with your initials.",
+    supportsPhoto: false,
+    columns: 1,
+    recommended: false,
+    defaultColor: "blue",
   },
   {
     id: "classic-photo",
     name: "Classic with photo",
     description: "The classic layout with a profile photo in the header.",
     supportsPhoto: true,
+    columns: 1,
+    recommended: false,
+    defaultColor: "navy",
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Letter-spaced header and centered section titles. Quiet and clean.",
+    supportsPhoto: false,
+    columns: 1,
+    recommended: false,
+    defaultColor: "charcoal",
+  },
+  {
+    id: "timeline",
+    name: "Timeline",
+    description: "Experience laid out on a vertical timeline.",
+    supportsPhoto: false,
+    columns: 1,
+    recommended: false,
+    defaultColor: "teal",
+  },
+  {
+    id: "sidebar",
+    name: "Sidebar",
+    description: "Coloured sidebar for photo, contact and skills; experience on the right.",
+    supportsPhoto: true,
+    columns: 2,
+    recommended: false,
+    defaultColor: "navy",
+  },
+  {
+    id: "split",
+    name: "Split",
+    description: "Wide main column with skills and languages in a side panel.",
+    supportsPhoto: false,
+    columns: 2,
+    recommended: false,
+    defaultColor: "green",
+  },
+  {
+    id: "profile",
+    name: "Profile",
+    description: "Tinted header with a headshot and a narrow details column.",
+    supportsPhoto: true,
+    columns: 2,
+    recommended: false,
+    defaultColor: "maroon",
   },
 ];
 
-export const DEFAULT_TEMPLATE_ID = RESUME_TEMPLATES[0].id;
+export const TEMPLATE_FILTERS = {
+  headshot: {
+    label: "Headshot",
+    options: [
+      { value: "with", label: "With photo" },
+      { value: "without", label: "Without photo" },
+    ],
+  },
+  columns: {
+    label: "Columns",
+    options: [
+      { value: "1", label: "One column" },
+      { value: "2", label: "Two columns" },
+    ],
+  },
+};
 
 export const PERSONAL_FIELD_GROUPS = [
   {

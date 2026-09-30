@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { BUILDER_STEPS, DEFAULT_TEMPLATE_ID } from "@/constants/builder";
+import { BUILDER_STEPS } from "@/constants/builder";
 
 const EMPTY_PERSONAL = {
   fullName: "",
@@ -22,14 +22,16 @@ export const useBuilderStore = create(
   persist(
     (set) => ({
       currentStep: BUILDER_STEPS[0].id,
-      templateId: DEFAULT_TEMPLATE_ID,
+      // Chosen on /templates; the builder redirects there while this is empty.
+      templateId: null,
+      accentColor: "",
       personal: EMPTY_PERSONAL,
       summary: "",
       // File name of the uploaded resume last merged in, so it's only imported once.
       importedFrom: "",
 
       setStep: (currentStep) => set({ currentStep }),
-      setTemplate: (templateId) => set({ templateId }),
+      chooseTemplate: (templateId, accentColor) => set({ templateId, accentColor }),
       updatePersonal: (field, value) =>
         set((state) => ({ personal: { ...state.personal, [field]: value } })),
       setSummary: (summary) => set({ summary }),
@@ -48,7 +50,18 @@ export const useBuilderStore = create(
           };
         }),
     }),
-    // Rehydrated manually after mount to avoid SSR hydration mismatches.
-    { name: "resume-builder", skipHydration: true }
+    {
+      name: "resume-builder",
+      version: 1,
+      // v0 had "template" as a builder step.
+      migrate: (state) => ({
+        ...state,
+        currentStep: BUILDER_STEPS.some((step) => step.id === state.currentStep)
+          ? state.currentStep
+          : BUILDER_STEPS[0].id,
+      }),
+      // Rehydrated manually after mount to avoid SSR hydration mismatches.
+      skipHydration: true,
+    }
   )
 );

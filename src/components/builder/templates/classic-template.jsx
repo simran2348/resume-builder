@@ -1,39 +1,19 @@
-/* eslint-disable @next/next/no-img-element -- photo is a local data URL */
+import { Name, Photo, ResumeSections, accentStyle, getContacts, getLinks } from "@/components/builder/templates/shared";
 
-// Single-column, top-to-bottom layout. Colours are fixed (not theme tokens) because this is the printed page.
-export default function ClassicTemplate({ resume, showPhoto = false }) {
-  const { personal, summary } = resume;
-
-  const contacts = [personal.email, personal.phone, personal.location].filter(Boolean);
-  const links = [personal.linkedin, personal.github, personal.website].filter(Boolean);
-  const hasHeaderDetails = contacts.length > 0 || links.length > 0;
+// Single-column, top-to-bottom layout, optionally with a round photo.
+export default function ClassicTemplate({ resume, accent, showPhoto = false }) {
+  const { personal } = resume;
+  const contacts = getContacts(personal);
+  const links = getLinks(personal);
 
   return (
-    <div className="px-14 py-12 font-sans text-[13px] leading-relaxed text-neutral-800">
+    <div style={accentStyle(accent)} className="px-14 py-12 font-sans text-[12.5px] leading-relaxed text-neutral-700">
       <header className="flex items-center gap-6">
-        {showPhoto && (
-          <div className="size-24 shrink-0 overflow-hidden rounded-full bg-neutral-100 ring-1 ring-neutral-200">
-            {personal.photo && (
-              <img src={personal.photo} alt="" className="size-full object-cover" />
-            )}
-          </div>
-        )}
-
+        {showPhoto && <Photo src={personal.photo} className="size-24 rounded-full" />}
         <div className="min-w-0 flex-1">
-          <h1
-            className={
-              personal.fullName
-                ? "text-3xl font-bold tracking-tight text-neutral-900"
-                : "text-3xl font-bold tracking-tight text-neutral-300"
-            }
-          >
-            {personal.fullName || "Your Name"}
-          </h1>
-          {personal.jobTitle && (
-            <p className="mt-1 text-base font-medium text-neutral-600">{personal.jobTitle}</p>
-          )}
-
-          {hasHeaderDetails && (
+          <Name value={personal.fullName} className="text-3xl font-bold tracking-tight text-neutral-900" />
+          {personal.jobTitle && <p className="mt-1 text-base font-medium text-(--tpl)">{personal.jobTitle}</p>}
+          {(contacts.length > 0 || links.length > 0) && (
             <div className="mt-3 space-y-0.5 text-[12px] text-neutral-600">
               {contacts.length > 0 && <p>{contacts.join("  |  ")}</p>}
               {links.length > 0 && <p>{links.join("  |  ")}</p>}
@@ -42,11 +22,7 @@ export default function ClassicTemplate({ resume, showPhoto = false }) {
         </div>
       </header>
 
-      {summary && (
-        <Section title="Professional Summary">
-          <p className="whitespace-pre-line">{summary}</p>
-        </Section>
-      )}
+      <ResumeSections resume={resume} Section={Section} titles={{ summary: "Professional Summary" }} />
     </div>
   );
 }
@@ -54,7 +30,7 @@ export default function ClassicTemplate({ resume, showPhoto = false }) {
 function Section({ title, children }) {
   return (
     <section className="mt-6">
-      <h2 className="border-b border-neutral-300 pb-1 text-[12px] font-bold tracking-[0.12em] text-neutral-900 uppercase">
+      <h2 className="border-b border-neutral-300 pb-1 text-[12px] font-bold tracking-[0.12em] text-(--tpl) uppercase">
         {title}
       </h2>
       <div className="mt-2">{children}</div>

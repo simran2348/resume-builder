@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, Loader2, PencilLine } from "lucide-react";
 
 import BuilderSidebar from "@/components/builder/builder-sidebar";
@@ -12,6 +13,7 @@ import { useBuilderStore } from "@/store/builderStore";
 import { useResumeStore } from "@/store/resumeStore";
 
 export default function ResumeBuilder() {
+  const router = useRouter();
   const [isHydrated, setIsHydrated] = useState(false);
   // Below lg only one panel fits, so the user toggles between editing and previewing.
   const [mobileView, setMobileView] = useState("edit");
@@ -25,14 +27,19 @@ export default function ResumeBuilder() {
 
       // Auto-fill from a resume uploaded on the home page (once per uploaded file).
       const { importedResume, importedFileName } = useResumeStore.getState();
-      const { importedFrom, importResume } = useBuilderStore.getState();
+      const { importedFrom, importResume, templateId } = useBuilderStore.getState();
+      // A template must be picked first.
+      if (!templateId) {
+        router.replace("/templates");
+        return;
+      }
       if (importedResume && importedFileName && importedFileName !== importedFrom) {
         importResume(importedResume, importedFileName);
       }
       setIsHydrated(true);
     }
     hydrate();
-  }, []);
+  }, [router]);
 
   if (!isHydrated) {
     return (

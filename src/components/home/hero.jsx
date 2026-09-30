@@ -32,7 +32,7 @@ export default function Hero() {
         </div>
 
         <Link
-          href="/builder"
+          href="/templates"
           className={cn(
             buttonVariants({ size: "lg" }),
             "h-12 w-full gap-2 rounded-xl bg-brand px-6 text-base text-brand-foreground shadow-sm hover:bg-brand/90 focus-visible:ring-brand/40 sm:w-auto"

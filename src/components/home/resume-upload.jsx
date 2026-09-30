@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CheckCircle2, FileText, Loader2, UploadCloud, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ function formatSize(bytes) {
 }
 
 export default function ResumeUpload() {
+  const router = useRouter();
   const inputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | uploading | success | error
@@ -66,6 +68,7 @@ export default function ResumeUpload() {
 
       setImportedResume(json.data, json.fileName);
       setStatus("success");
+      router.push("/templates");
     } catch (err) {
       setStatus("error");
       setError(err.message);

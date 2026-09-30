@@ -4,13 +4,11 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import PersonalStep from "@/components/builder/steps/personal-step";
 import SummaryStep from "@/components/builder/steps/summary-step";
-import TemplateStep from "@/components/builder/steps/template-step";
 import { Button } from "@/components/ui/button";
 import { BUILDER_STEPS } from "@/constants/builder";
 import { useBuilderStore } from "@/store/builderStore";
 
 const STEP_COMPONENTS = {
-  template: TemplateStep,
   personal: PersonalStep,
   summary: SummaryStep,
 };
@@ -35,7 +33,7 @@ export default function StepPanel() {
         <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground">{step.label}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{step.description}</p>
 
-        {importedFrom && step.id !== "template" && (
+        {importedFrom && (
           <p className="mt-4 rounded-lg border border-border bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
             Pre-filled from <span className="font-medium text-foreground">{importedFrom}</span>.
             Please double-check the details.
