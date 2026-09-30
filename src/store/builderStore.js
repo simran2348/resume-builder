@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { BUILDER_STEPS } from "@/constants/builder";
+import { BUILDER_STEPS, DEFAULT_THEME } from "@/constants/builder";
 
 const EMPTY_PERSONAL = {
   fullName: "",
@@ -24,14 +24,23 @@ export const useBuilderStore = create(
       currentStep: BUILDER_STEPS[0].id,
       // Chosen on /templates; the builder redirects there while this is empty.
       templateId: null,
-      accentColor: "",
+      // Visual settings shared by every template (fonts, sizes, colours, spacing).
+      theme: DEFAULT_THEME,
       personal: EMPTY_PERSONAL,
       summary: "",
       // File name of the uploaded resume last merged in, so it's only imported once.
       importedFrom: "",
 
       setStep: (currentStep) => set({ currentStep }),
-      chooseTemplate: (templateId, accentColor) => set({ templateId, accentColor }),
+      setTemplate: (templateId) => set({ templateId }),
+      // From the templates screen; an accent picked there is carried into the theme.
+      chooseTemplate: (templateId, accent) =>
+        set((state) => ({
+          templateId,
+          theme: accent ? { ...state.theme, accent, photoBorderColor: accent } : state.theme,
+        })),
+      updateTheme: (key, value) => set((state) => ({ theme: { ...state.theme, [key]: value } })),
+      resetTheme: () => set({ theme: DEFAULT_THEME }),
       updatePersonal: (field, value) =>
         set((state) => ({ personal: { ...state.personal, [field]: value } })),
       setSummary: (summary) => set({ summary }),
@@ -52,13 +61,24 @@ export const useBuilderStore = create(
     }),
     {
       name: "resume-builder",
-      version: 1,
-      // v0 had "template" as a builder step.
-      migrate: (state) => ({
+      version: 2,
+      // v0 had "template" as a builder step; v1 stored a single `accentColor` instead of `theme`.
+      migrate: ({ accentColor, ...state }) => ({
         ...state,
         currentStep: BUILDER_STEPS.some((step) => step.id === state.currentStep)
           ? state.currentStep
           : BUILDER_STEPS[0].id,
+        theme: {
+          ...DEFAULT_THEME,
+          ...state.theme,
+          ...(accentColor && { accent: accentColor, photoBorderColor: accentColor }),
+        },
+      }),
+      // Deep-merge the theme so settings added later get their defaults.
+      merge: (persisted, current) => ({
+        ...current,
+        ...persisted,
+        theme: { ...current.theme, ...persisted?.theme },
       }),
       // Rehydrated manually after mount to avoid SSR hydration mismatches.
       skipHydration: true,

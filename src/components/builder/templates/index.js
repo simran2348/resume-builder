@@ -14,6 +14,7 @@ function ClassicPhotoTemplate(props) {
 }
 
 // Maps a template id (from RESUME_TEMPLATES) to the component that renders it. Add new templates here.
+// Every template takes `{ resume, theme }`.
 const TEMPLATE_COMPONENTS = {
   classic: ClassicTemplate,
   "classic-photo": ClassicPhotoTemplate,
@@ -33,5 +34,7 @@ export function getColor(colorId) {
 
 export function getTemplate(templateId) {
   const meta = RESUME_TEMPLATES.find((t) => t.id === templateId) ?? RESUME_TEMPLATES[0];
-  return { ...meta, defaultAccent: getColor(meta.defaultColor).value, Component: TEMPLATE_COMPONENTS[meta.id] };
+  return { ...meta, Component: TEMPLATE_COMPONENTS[meta.id] };
 }
+
+export const ALL_TEMPLATES = RESUME_TEMPLATES.map((t) => getTemplate(t.id));

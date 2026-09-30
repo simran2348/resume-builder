@@ -30,7 +30,7 @@ export const ACCENT_COLORS = [
 ];
 
 // `supportsPhoto` controls the headshot filter and whether the photo upload shows in Personal details.
-// `columns` drives the columns filter. `defaultColor` is an ACCENT_COLORS id.
+// `columns` drives the columns filter. Colours, fonts and sizes come from the shared theme (DEFAULT_THEME).
 export const RESUME_TEMPLATES = [
   {
     id: "classic",
@@ -39,16 +39,14 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 1,
     recommended: true,
-    defaultColor: "charcoal",
   },
   {
     id: "elegant",
     name: "Elegant",
-    description: "Centered serif header with a monogram. Timeless and formal.",
+    description: "Centered header with a monogram. Timeless and formal.",
     supportsPhoto: false,
     columns: 1,
     recommended: true,
-    defaultColor: "blue",
   },
   {
     id: "side-headings",
@@ -57,7 +55,6 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: true,
     columns: 1,
     recommended: true,
-    defaultColor: "blue",
   },
   {
     id: "banner",
@@ -66,7 +63,6 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 1,
     recommended: false,
-    defaultColor: "blue",
   },
   {
     id: "classic-photo",
@@ -75,7 +71,6 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: true,
     columns: 1,
     recommended: false,
-    defaultColor: "navy",
   },
   {
     id: "minimal",
@@ -84,7 +79,6 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 1,
     recommended: false,
-    defaultColor: "charcoal",
   },
   {
     id: "timeline",
@@ -93,7 +87,6 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 1,
     recommended: false,
-    defaultColor: "teal",
   },
   {
     id: "sidebar",
@@ -102,7 +95,6 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: true,
     columns: 2,
     recommended: false,
-    defaultColor: "navy",
   },
   {
     id: "split",
@@ -111,7 +103,6 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: false,
     columns: 2,
     recommended: false,
-    defaultColor: "green",
   },
   {
     id: "profile",
@@ -120,7 +111,6 @@ export const RESUME_TEMPLATES = [
     supportsPhoto: true,
     columns: 2,
     recommended: false,
-    defaultColor: "maroon",
   },
 ];
 
@@ -184,3 +174,58 @@ export const PHOTO_CONFIG = {
   // Photos are resized to this many pixels (square) before being saved.
   outputSize: 400,
 };
+
+// Fonts offered in the theme panel. `variable` is defined by next/font (see src/lib/resume-fonts.js).
+export const RESUME_FONTS = [
+  { id: "inter", label: "Inter", variable: "--font-inter", fallback: "sans-serif" },
+  { id: "roboto", label: "Roboto", variable: "--font-resume-roboto", fallback: "sans-serif" },
+  { id: "open-sans", label: "Open Sans", variable: "--font-resume-open-sans", fallback: "sans-serif" },
+  { id: "lato", label: "Lato", variable: "--font-resume-lato", fallback: "sans-serif" },
+  { id: "montserrat", label: "Montserrat", variable: "--font-resume-montserrat", fallback: "sans-serif" },
+  { id: "poppins", label: "Poppins", variable: "--font-resume-poppins", fallback: "sans-serif" },
+  { id: "merriweather", label: "Merriweather", variable: "--font-resume-merriweather", fallback: "serif" },
+  { id: "lora", label: "Lora", variable: "--font-resume-lora", fallback: "serif" },
+  { id: "playfair", label: "Playfair Display", variable: "--font-resume-playfair", fallback: "serif" },
+  { id: "garamond", label: "EB Garamond", variable: "--font-resume-garamond", fallback: "serif" },
+];
+
+// Swatches in the theme panel's colour grid.
+export const THEME_PALETTE = [
+  "#f44336", "#e91e63", "#9c27b0", "#673ab7", "#3f51b5", "#2563eb", "#03a9f4", "#00bcd4",
+  "#009688", "#166534", "#4caf50", "#8bc34a", "#c2410c", "#ff9800", "#1f2937", "#9e9e9e",
+];
+
+// One theme shared by every template, so templates differ only in layout.
+export const DEFAULT_THEME = {
+  accent: "#2563eb",
+  background: "#ffffff",
+  text: "#262626",
+  headingFont: "inter",
+  bodyFont: "inter",
+  nameSize: 32,
+  headingSize: 13,
+  bodySize: 12.5,
+  lineHeight: 1.5,
+  sectionSpacing: 22,
+  pageMargin: 52,
+  photoShape: "circle",
+  photoBorderWidth: 0,
+  photoBorderColor: "#2563eb",
+};
+
+// Slider ranges for the theme panel.
+export const THEME_LIMITS = {
+  nameSize: { min: 20, max: 48, step: 1, unit: "px" },
+  headingSize: { min: 10, max: 22, step: 0.5, unit: "px" },
+  bodySize: { min: 9, max: 16, step: 0.5, unit: "px" },
+  lineHeight: { min: 1.1, max: 2, step: 0.05, unit: "" },
+  sectionSpacing: { min: 8, max: 48, step: 1, unit: "px" },
+  pageMargin: { min: 24, max: 96, step: 2, unit: "px" },
+  photoBorderWidth: { min: 0, max: 10, step: 1, unit: "px" },
+};
+
+export const PHOTO_SHAPES = [
+  { id: "circle", label: "Circle", radius: "9999px" },
+  { id: "rounded", label: "Rounded", radius: "14%" },
+  { id: "square", label: "Square", radius: "0px" },
+];

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Check, FileUser, LayoutTemplate, Moon, Sun } from "lucide-react";
+import { Check, FileUser, Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -70,17 +70,6 @@ export default function BuilderSidebar() {
           })}
         </ol>
       </nav>
-
-      <Tooltip>
-        <TooltipTrigger
-          render={<Link href="/templates" />}
-          aria-label="Change template"
-          className="flex size-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-brand/40"
-        >
-          <LayoutTemplate className="size-5" />
-        </TooltipTrigger>
-        <TooltipContent side="right">Change template</TooltipContent>
-      </Tooltip>
 
       <Button
         variant="ghost"

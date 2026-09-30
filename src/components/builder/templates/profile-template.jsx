@@ -1,26 +1,27 @@
-import { Name, Photo, ResumeSections, accentStyle, getContacts, getLinks } from "@/components/builder/templates/shared";
+import { Name, Photo, ResumeSections, getContacts, getLinks, themeStyle, tw } from "@/components/builder/templates/shared";
+import { cn } from "@/lib/utils";
 
 // Tinted header with headshot, then a narrow details column on the left and main content on the right.
-export default function ProfileTemplate({ resume, accent }) {
+export default function ProfileTemplate({ resume, theme }) {
   const { personal } = resume;
   const contacts = getContacts(personal);
   const links = getLinks(personal);
 
   return (
-    <div style={accentStyle(accent)} className="font-sans text-[12.5px] leading-relaxed text-neutral-700">
-      <header className="flex items-center gap-7 bg-(--tpl)/8 px-12 py-9">
-        <Photo src={personal.photo} className="size-28 rounded-full ring-4 ring-white" />
+    <div style={themeStyle(theme)} className={tw.root}>
+      <header className={cn(tw.padX, "flex items-center gap-7 bg-(--tpl)/8 py-9")}>
+        <Photo src={personal.photo} className="size-28" />
         <div className="min-w-0">
-          <Name value={personal.fullName} className="text-4xl font-bold tracking-tight text-(--tpl)" />
-          {personal.jobTitle && <p className="mt-1 text-base font-medium text-neutral-700">{personal.jobTitle}</p>}
+          <Name value={personal.fullName} className="tracking-tight text-(--tpl)" />
+          {personal.jobTitle && <p className={cn(tw.title, "mt-1 font-medium")}>{personal.jobTitle}</p>}
         </div>
       </header>
 
-      <div className="grid grid-cols-[200px_1fr] gap-8 px-12 py-8">
-        <aside className="space-y-6 border-r border-neutral-200 pr-6">
+      <div className={cn(tw.padX, "grid grid-cols-[200px_1fr] gap-8 py-8")}>
+        <aside className={cn(tw.rule, "space-y-(--tpl-section-gap) border-r pr-6")}>
           {contacts.length > 0 && (
             <Section title="Contact">
-              <ul className="space-y-1 text-[11.5px] break-words">
+              <ul className={cn(tw.small, "space-y-1 break-words")}>
                 {contacts.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -29,7 +30,7 @@ export default function ProfileTemplate({ resume, accent }) {
           )}
           {links.length > 0 && (
             <Section title="Links">
-              <ul className="space-y-1 text-[11.5px] break-words">
+              <ul className={cn(tw.small, "space-y-1 break-words")}>
                 {links.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -44,7 +45,7 @@ export default function ProfileTemplate({ resume, accent }) {
           />
         </aside>
 
-        <main className="min-w-0 space-y-6">
+        <main className="min-w-0 space-y-(--tpl-section-gap)">
           <ResumeSections
             resume={resume}
             Section={Section}
@@ -60,7 +61,7 @@ export default function ProfileTemplate({ resume, accent }) {
 function Section({ title, children }) {
   return (
     <section>
-      <h2 className="mb-2 border-b-2 border-(--tpl) pb-1 text-[11px] font-bold tracking-[0.14em] text-neutral-900 uppercase">
+      <h2 className={cn(tw.heading, tw.strong, "mb-2 border-b-2 border-(--tpl) pb-1 font-bold tracking-[0.14em] uppercase")}>
         {title}
       </h2>
       {children}

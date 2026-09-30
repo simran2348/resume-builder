@@ -4,16 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FileCheck2, SearchX } from "lucide-react";
 
-import { getColor, getTemplate } from "@/components/builder/templates";
+import { ALL_TEMPLATES, getColor } from "@/components/builder/templates";
 import TemplateCard from "@/components/templates/template-card";
 import TemplateFilters, { AppliedFilters } from "@/components/templates/template-filters";
 import { Button } from "@/components/ui/button";
-import { RESUME_TEMPLATES, TEMPLATE_FILTERS } from "@/constants/builder";
+import { TEMPLATE_FILTERS } from "@/constants/builder";
 import { useBuilderStore } from "@/store/builderStore";
 import { useResumeStore } from "@/store/resumeStore";
 
 const EMPTY_FILTERS = { headshot: null, columns: null, color: null };
-const ALL_TEMPLATES = RESUME_TEMPLATES.map((t) => getTemplate(t.id));
 
 function matches(template, { headshot, columns }) {
   if (headshot === "with" && !template.supportsPhoto) return false;
@@ -27,6 +26,7 @@ export default function TemplateGallery() {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
 
   const currentTemplateId = useBuilderStore((state) => state.templateId);
+  const theme = useBuilderStore((state) => state.theme);
   const chooseTemplate = useBuilderStore((state) => state.chooseTemplate);
   const importedFileName = useResumeStore((state) => state.importedFileName);
 
@@ -37,6 +37,11 @@ export default function TemplateGallery() {
 
   const visible = useMemo(() => ALL_TEMPLATES.filter((t) => matches(t, filters)), [filters]);
   const selectedColor = filters.color ? getColor(filters.color) : null;
+  // Every card uses the same theme so only the layouts differ; a picked colour overrides the accent.
+  const cardTheme = useMemo(
+    () => (selectedColor ? { ...theme, accent: selectedColor.value, photoBorderColor: selectedColor.value } : theme),
+    [theme, selectedColor]
+  );
 
   const chips = [
     ...Object.entries(TEMPLATE_FILTERS).flatMap(([key, filter]) => {
@@ -51,7 +56,7 @@ export default function TemplateGallery() {
   }
 
   function handleChoose(template) {
-    chooseTemplate(template.id, selectedColor?.value ?? "");
+    chooseTemplate(template.id, selectedColor?.value);
     router.push("/builder");
   }
 
@@ -94,7 +99,7 @@ export default function TemplateGallery() {
             <TemplateCard
               key={template.id}
               template={template}
-              accent={selectedColor?.value ?? template.defaultAccent}
+              theme={cardTheme}
               isCurrent={template.id === currentTemplateId}
               onChoose={handleChoose}
             />

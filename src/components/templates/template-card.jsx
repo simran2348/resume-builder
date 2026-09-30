@@ -4,7 +4,7 @@ import ScaledPage from "@/components/builder/scaled-page";
 import { SAMPLE_RESUME } from "@/constants/sample-resume";
 import { cn } from "@/lib/utils";
 
-export default function TemplateCard({ template, accent, isCurrent, onChoose }) {
+export default function TemplateCard({ template, theme, isCurrent, onChoose }) {
   const { Component } = template;
 
   return (
@@ -20,7 +20,7 @@ export default function TemplateCard({ template, accent, isCurrent, onChoose }) 
         )}
       >
         <ScaledPage clip>
-          <Component resume={SAMPLE_RESUME} accent={accent} />
+          <Component resume={SAMPLE_RESUME} theme={theme} />
         </ScaledPage>
 
         <div className="absolute top-3 right-3 flex gap-1.5">
