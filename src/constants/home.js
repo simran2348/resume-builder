@@ -17,7 +17,6 @@ import {
 import { NAV_LINKS, SITE } from "@/constants/site";
 
 export const HERO_CONTENT = {
-  badge: "Free • No Account Required",
   title: "Build a Resume That Gets Read",
   subtitle: `Create a clean, professional, ATS-friendly resume for free. Upload an existing resume or start from scratch with ${SITE.name}.`,
   uploadButtonLabel: "Upload Existing Resume",

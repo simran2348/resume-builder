@@ -30,8 +30,9 @@ function formatSize(bytes) {
 
 // "Upload existing resume" button: opens the file picker (or takes a dropped file), sends it to
 // /api/resume/parse, stores the result and continues to /templates. `before` / `after` render other
-// actions (e.g. "Create new resume") in the same row. `inverted` adapts the status text for dark panels.
-export default function ResumeUpload({ label, before, after, buttonClassName, inverted = false }) {
+// actions (e.g. "Create new resume") in the same row, at equal widths; `rowClassName` adjusts that grid.
+// `inverted` adapts the status text for dark panels.
+export default function ResumeUpload({ label, before, after, buttonClassName, rowClassName, inverted = false }) {
   const router = useRouter();
   const inputId = useId();
   const inputRef = useRef(null);
@@ -92,7 +93,7 @@ export default function ResumeUpload({ label, before, after, buttonClassName, in
 
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+      <div className={cn("grid gap-3 sm:grid-cols-2 [&>a]:w-full", rowClassName)}>
         {before}
         <input
           ref={inputRef}
@@ -116,7 +117,7 @@ export default function ResumeUpload({ label, before, after, buttonClassName, in
             handleFile(e.dataTransfer.files?.[0]);
           }}
           className={cn(
-            "inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-base font-medium shadow-sm transition-all select-none",
+            "inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 text-base whitespace-nowrap font-medium shadow-sm transition-all select-none",
             "bg-brand text-brand-foreground hover:-translate-y-px hover:bg-brand/90 hover:shadow-md",
             "peer-focus-visible:ring-3 peer-focus-visible:ring-brand/40 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background",
             isDragging && "ring-3 ring-brand/40 ring-offset-2 ring-offset-background",

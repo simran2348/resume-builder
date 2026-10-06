@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import ResumeUpload from "@/components/home/resume-upload";
 import { DotGrid, Ring } from "@/components/ui/decor";
@@ -19,7 +19,7 @@ export default function CtaSection() {
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-pretty text-blue-50/90">{CTA_SECTION.subtitle}</p>
 
-          <div className="mt-9 [&>div>div:first-child]:justify-center [&_[aria-live]>div]:mx-auto">
+          <div className="mx-auto mt-9 max-w-xl [&_[aria-live]>div]:mx-auto">
             <ResumeUpload
               inverted
               label={HERO_CONTENT.uploadButtonLabel}
@@ -29,8 +29,8 @@ export default function CtaSection() {
                   href="/templates"
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 text-base font-semibold text-brand-deep shadow-sm transition-all outline-none hover:-translate-y-px hover:shadow-md focus-visible:ring-3 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-brand"
                 >
+                  <Plus className="size-4" aria-hidden />
                   {HERO_CONTENT.createButtonLabel}
-                  <ArrowRight className="size-4" aria-hidden />
                 </Link>
               }
             />

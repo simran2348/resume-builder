@@ -9,9 +9,7 @@ export default function AtsSection() {
   return (
     <section id="ats" aria-labelledby="ats-title" className="scroll-mt-8 px-4 py-24 sm:px-6 lg:px-8">
       <div className="reveal mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
-        <ParsedDocument />
-
-        <div className="lg:order-first">
+        <div>
           <SectionHeading
             id="ats-title"
             align="left"
@@ -48,6 +46,8 @@ export default function AtsSection() {
             {ATS_SECTION.note}
           </p>
         </div>
+
+        <ParsedDocument />
       </div>
     </section>
   );

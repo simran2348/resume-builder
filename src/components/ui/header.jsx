@@ -22,7 +22,7 @@ export default function Header() {
       <div className="mx-auto flex h-12 w-full max-w-6xl items-center justify-between gap-4 md:h-14">
         <Link
           href="/"
-          className="rounded-md text-xl font-bold tracking-tight text-heading outline-none focus-visible:ring-3 focus-visible:ring-brand/40"
+          className="rounded-md text-2xl font-bold tracking-tight text-heading outline-none focus-visible:ring-3 focus-visible:ring-brand/40"
         >
           {SITE.name}
           <span className="text-brand" aria-hidden>

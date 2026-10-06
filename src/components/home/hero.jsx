@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CircleCheck, ChevronDown, ShieldCheck } from "lucide-react";
+import { ChevronDown, CircleCheck, Plus, ShieldCheck } from "lucide-react";
 
 import { CTA_SECONDARY } from "@/components/home/cta-styles";
 import HeroPreview from "@/components/home/hero-preview";
@@ -14,14 +14,9 @@ export default function Hero() {
     >
       <div className="mx-auto grid w-full max-w-6xl items-center gap-16 lg:grid-cols-[1fr_1.05fr] lg:gap-12">
         <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:duration-700">
-          <span className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-card/70 px-3 py-1 text-xs font-semibold text-brand shadow-sm backdrop-blur-sm">
-            <span className="size-1.5 rounded-full bg-brand" aria-hidden />
-            {HERO_CONTENT.badge}
-          </span>
-
           <h1
             id="hero-title"
-            className="mt-6 text-4xl leading-[1.08] font-bold tracking-tight text-balance text-heading sm:text-5xl lg:text-6xl"
+            className="text-4xl leading-[1.08] font-bold tracking-tight text-balance text-heading sm:text-5xl lg:text-6xl"
           >
             {HERO_CONTENT.title}
           </h1>
@@ -30,13 +25,15 @@ export default function Hero() {
           </p>
 
           {/* Real actions: upload goes through /api/resume/parse, create opens the template picker. */}
-          <div id="get-started" className="mt-9 scroll-mt-8">
+          <div id="get-started" className="mt-9 max-w-xl scroll-mt-8">
             <ResumeUpload
               label={HERO_CONTENT.uploadButtonLabel}
+              // The text column is narrowest between lg and xl, so the buttons stack there.
+              rowClassName="lg:grid-cols-1 xl:grid-cols-2"
               after={
                 <Link href="/templates" className={CTA_SECONDARY}>
+                  <Plus className="size-4" aria-hidden />
                   {HERO_CONTENT.createButtonLabel}
-                  <ArrowRight className="size-4" aria-hidden />
                 </Link>
               }
             />
