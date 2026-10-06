@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Eraser, LayoutTemplate, Maximize, Minus, Paintbrush, Plus, RotateCcw } from "lucide-react";
 
 import PagedDocument, { PAGE_HEIGHT, PAGE_WIDTH } from "@/components/builder/paged-document";
-import SidePanel from "@/components/builder/side-panel";
+import SidePanel, { PANEL_WIDTHS } from "@/components/builder/side-panel";
 import TemplatesPanel from "@/components/builder/templates-panel";
 import ThemePanel from "@/components/builder/theme-panel";
 import { getTemplate } from "@/components/builder/templates";
@@ -30,12 +30,13 @@ const FIT_PADDING_Y = 112;
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 2;
 
-export default function PreviewPanel() {
+// `activePanel` (null | "templates" | "theme" | "steps") is owned by ResumeBuilder, which also places the
+// mobile floating buttons beside whichever panel is open.
+export default function PreviewPanel({ activePanel, onPanelChange }) {
   const frameRef = useRef(null);
   const [fitScale, setFitScale] = useState(0);
   // null = auto-fit the whole page; otherwise a fixed scale chosen with the zoom bar.
   const [zoom, setZoom] = useState(null);
-  const [activePanel, setActivePanel] = useState(null); // null | "templates" | "theme"
   const [confirmReset, setConfirmReset] = useState(false);
 
   const templateId = useBuilderStore((state) => state.templateId);
@@ -57,7 +58,7 @@ export default function PreviewPanel() {
     resetResume();
     // Also forget the uploaded file so it isn't imported again on the next visit.
     useResumeStore.getState().clearImportedResume();
-    setActivePanel(null);
+    onPanelChange(null);
     setConfirmReset(false);
   }
   const template = getTemplate(templateId);
@@ -75,15 +76,8 @@ export default function PreviewPanel() {
   }, []);
 
 
-  useEffect(() => {
-    if (!activePanel) return;
-    const onKeyDown = (e) => e.key === "Escape" && setActivePanel(null);
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activePanel]);
-
   const scale = zoom ?? fitScale;
-  const togglePanel = (panel) => setActivePanel((current) => (current === panel ? null : panel));
+  const togglePanel = (panel) => onPanelChange(activePanel === panel ? null : panel);
   const stepZoom = (delta) =>
     setZoom(Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round((scale + delta) * 10) / 10)));
 
@@ -91,16 +85,19 @@ export default function PreviewPanel() {
     <div className="relative flex h-full">
       <div ref={frameRef} className="relative min-w-0 flex-1 bg-muted/40">
         <div className="absolute inset-0 flex overflow-auto px-6 py-14">
-          {/* m-auto centres the pages but still lets them scroll when zoomed past the frame. */}
-          <PagedDocument
-            template={template}
-            resume={resume}
-            theme={theme}
-            scale={scale || 1}
-            dimmed={isEmpty}
-            className={cn("m-auto", !scale && "invisible")}
-            pageClassName="shadow-lg ring-1 ring-black/5"
-          />
+          {/* m-auto centres the pages both ways (e.g. a width-fitted page on a tall phone screen) but still
+              lets them scroll when zoomed past the frame. It goes on this wrapper because it's the flex item. */}
+          <div className="m-auto">
+            <PagedDocument
+              template={template}
+              resume={resume}
+              theme={theme}
+              scale={scale || 1}
+              dimmed={isEmpty}
+              className={cn(!scale && "invisible")}
+              pageClassName="shadow-lg ring-1 ring-black/5"
+            />
+          </div>
         </div>
 
         {isEmpty && (
@@ -179,8 +176,8 @@ export default function PreviewPanel() {
         open={activePanel === "templates"}
         title="Templates"
         icon={LayoutTemplate}
-        widthClass="w-[260px]"
-        onClose={() => setActivePanel(null)}
+        width={PANEL_WIDTHS.templates}
+        onClose={() => onPanelChange(null)}
       >
         <TemplatesPanel />
       </SidePanel>
@@ -189,8 +186,8 @@ export default function PreviewPanel() {
         open={activePanel === "theme"}
         title="Theme"
         icon={Paintbrush}
-        widthClass="w-[360px]"
-        onClose={() => setActivePanel(null)}
+        width={PANEL_WIDTHS.theme}
+        onClose={() => onPanelChange(null)}
         actions={
           <Button variant="ghost" size="sm" onClick={resetTheme} className="text-muted-foreground">
             <RotateCcw />

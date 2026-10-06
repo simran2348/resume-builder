@@ -33,14 +33,16 @@ export default function ThemePanel() {
   }
 
   return (
-    <div className="divide-y divide-border">
+    // @container: paired rows sit side by side when the panel is wide enough (desktop) and stack in the
+    // narrower panel on small screens.
+    <div className="@container divide-y divide-border">
       <PanelSection icon={Type} title="Typography">
         {slider("nameSize", "Name")}
-        <div className="grid grid-cols-[1fr_150px] items-end gap-4">
+        <div className="grid items-end gap-4 @xs:grid-cols-[1fr_150px]">
           {slider("headingSize", "Headings")}
           <FontSelect label="Heading font" value={theme.headingFont} onChange={(v) => updateTheme("headingFont", v)} />
         </div>
-        <div className="grid grid-cols-[1fr_150px] items-end gap-4">
+        <div className="grid items-end gap-4 @xs:grid-cols-[1fr_150px]">
           {slider("bodySize", "Body")}
           <FontSelect label="Body font" value={theme.bodyFont} onChange={(v) => updateTheme("bodyFont", v)} />
         </div>
@@ -129,7 +131,7 @@ export default function ThemePanel() {
           })}
         </div>
         <ColorField label="Primary" value={theme.accent} onChange={setAccent} />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 @xs:grid-cols-2">
           <ColorField label="Background" value={theme.background} onChange={(v) => updateTheme("background", v)} />
           <ColorField label="Text" value={theme.text} onChange={(v) => updateTheme("text", v)} />
         </div>
