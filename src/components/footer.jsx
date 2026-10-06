@@ -5,19 +5,24 @@ import { FOOTER_CONTENT } from "@/constants/home";
 export default function Footer() {
   return (
     <footer className="mt-auto border-t border-border bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-4 py-10 sm:px-6 md:flex-row md:justify-between">
-        <div className="text-center md:text-left">
-          <p className="font-semibold tracking-tight text-foreground">{FOOTER_CONTENT.brand}</p>
-          <p className="mt-1 text-sm text-muted-foreground">{FOOTER_CONTENT.tagline}</p>
+      <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-start md:justify-between">
+        <div className="max-w-sm">
+          <Link href="/" className="rounded-md text-lg font-bold tracking-tight text-foreground outline-none focus-visible:ring-3 focus-visible:ring-brand/40">
+            {FOOTER_CONTENT.brand}
+            <span className="text-brand" aria-hidden>
+              .
+            </span>
+          </Link>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{FOOTER_CONTENT.tagline}</p>
         </div>
 
         <nav aria-label="Footer">
-          <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+          <ul className="grid grid-cols-2 gap-x-10 gap-y-3 sm:flex sm:flex-wrap sm:gap-x-8">
             {FOOTER_CONTENT.links.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-sm text-muted-foreground transition-colors hover:text-brand"
+                  className="rounded-sm text-sm text-muted-foreground transition-colors outline-none hover:text-brand focus-visible:ring-3 focus-visible:ring-brand/40"
                 >
                   {link.label}
                 </Link>

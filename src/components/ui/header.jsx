@@ -1,34 +1,38 @@
 "use client";
 
+import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { SITE } from "@/constants/site";
 import { useTheme } from "@/context/ThemeContext";
 
+// Transparent header that floats over the page's top gradient (see Background). It scrolls away with the
+// page rather than sticking, so content never shows through behind it.
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-50 w-full px-3 pt-3 sm:px-6 sm:pt-4 lg:px-8 md:pt-6">
-      <div className="mx-auto flex min-h-12 w-full max-w-[800px] items-center justify-between rounded-2xl border border-border bg-background/90 px-3.5 py-2 shadow-sm backdrop-blur-[10px] sm:px-5 md:min-h-14 md:rounded-full md:px-6">
-        {/* Logo */}
-        <div className="text-sm font-semibold tracking-tight text-foreground sm:text-base">
-          Linkfolio
-        </div>
+    <header className="relative z-50 w-full px-4 pt-4 sm:px-6 md:pt-6 lg:px-8">
+      <div className="mx-auto flex h-12 w-full max-w-6xl items-center justify-between md:h-14">
+        <Link
+          href="/"
+          className="rounded-md text-lg font-bold tracking-tight text-foreground outline-none focus-visible:ring-3 focus-visible:ring-brand/40 sm:text-xl"
+        >
+          {SITE.name}
+          <span className="text-brand" aria-hidden>
+            .
+          </span>
+        </Link>
 
-        {/* Theme toggle */}
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleTheme}
-          aria-label="Toggle theme"
-          className="size-9 rounded-full"
+          aria-label={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
+          className="size-10 rounded-full"
         >
-          {theme === "light" ? (
-            <Moon className="size-4 sm:size-5" />
-          ) : (
-            <Sun className="size-4 sm:size-5" />
-          )}
+          {theme === "light" ? <Moon className="size-5" aria-hidden /> : <Sun className="size-5" aria-hidden />}
         </Button>
       </div>
     </header>
