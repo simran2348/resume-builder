@@ -11,6 +11,7 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <ContentPage
+      eyebrow="About"
       title={`About ${SITE.name}`}
       intro={`${SITE.name} exists to solve a simple problem: creating a professional resume shouldn't require complicated templates, an account or a paid subscription.`}
     >

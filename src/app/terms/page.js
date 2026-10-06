@@ -11,6 +11,7 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <ContentPage
+      eyebrow="Legal"
       title="Terms & Conditions"
       meta={`Last updated: ${SITE.legalLastUpdated}`}
       intro={`These terms apply when you use ${SITE.name}. By using the website, you agree to them.`}

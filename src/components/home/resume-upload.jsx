@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, FileText, Loader2, UploadCloud, X } from "lucide-react";
+import { FileText, Loader2, Upload, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { UPLOAD_CONFIG } from "@/constants/home";
@@ -28,8 +28,12 @@ function formatSize(bytes) {
     : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export default function ResumeUpload() {
+// "Upload existing resume" button: opens the file picker (or takes a dropped file), sends it to
+// /api/resume/parse, stores the result and continues to /templates. `before` / `after` render other
+// actions (e.g. "Create new resume") in the same row. `inverted` adapts the status text for dark panels.
+export default function ResumeUpload({ label, before, after, buttonClassName, inverted = false }) {
   const router = useRouter();
+  const inputId = useId();
   const inputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | uploading | success | error
@@ -88,94 +92,79 @@ export default function ResumeUpload() {
 
   return (
     <div className="w-full">
-      <label
-        htmlFor="resume-upload"
-        onDragOver={(e) => {
-          e.preventDefault();
-          setIsDragging(true);
-        }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setIsDragging(false);
-          handleFile(e.dataTransfer.files?.[0]);
-        }}
-        className={cn(
-          "group flex w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border bg-card/70 px-6 py-10 text-center shadow-sm backdrop-blur-sm transition-colors sm:py-12",
-          "hover:border-brand/60 hover:bg-brand-glow",
-          "has-focus-visible:border-brand has-focus-visible:ring-3 has-focus-visible:ring-brand/30",
-          isDragging && "border-brand bg-brand-glow",
-          status === "error" && "border-destructive/60",
-          isUploading && "pointer-events-none opacity-80"
-        )}
-      >
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        {before}
         <input
           ref={inputRef}
-          id="resume-upload"
+          id={inputId}
           type="file"
           accept={[...UPLOAD_CONFIG.acceptedExtensions, ...UPLOAD_CONFIG.acceptedMimeTypes].join(",")}
-          className="sr-only"
+          className="peer sr-only"
           disabled={isUploading}
           onChange={(e) => handleFile(e.target.files?.[0])}
         />
-
-        <div className="flex size-12 items-center justify-center rounded-full bg-brand-glow text-brand">
-          {isUploading ? (
-            <Loader2 className="size-6 animate-spin" />
-          ) : hasImport ? (
-            <CheckCircle2 className="size-6" />
-          ) : (
-            <UploadCloud className="size-6" />
+        <label
+          htmlFor={inputId}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDragging(true);
+          }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setIsDragging(false);
+            handleFile(e.dataTransfer.files?.[0]);
+          }}
+          className={cn(
+            "inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-base font-medium shadow-sm transition-all select-none",
+            "bg-brand text-brand-foreground hover:-translate-y-px hover:bg-brand/90 hover:shadow-md",
+            "peer-focus-visible:ring-3 peer-focus-visible:ring-brand/40 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background",
+            isDragging && "ring-3 ring-brand/40 ring-offset-2 ring-offset-background",
+            isUploading && "pointer-events-none opacity-80",
+            buttonClassName
           )}
-        </div>
+        >
+          {isUploading ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : (
+            <Upload className="size-4" aria-hidden />
+          )}
+          {isUploading ? "Reading your resume…" : label}
+        </label>
+        {after}
+      </div>
 
-        {isUploading ? (
-          <div>
-            <p className="font-medium text-foreground">Reading your resume…</p>
-            <p className="mt-1 text-sm text-muted-foreground">{file?.name}</p>
-          </div>
-        ) : hasImport ? (
-          <div>
-            <p className="font-medium text-foreground">Resume imported</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              We&apos;ll use these details to auto-fill any template you pick.
-            </p>
-          </div>
-        ) : (
-          <div>
-            <p className="font-medium text-foreground">
-              <span className="text-brand">Click to upload</span> or drag and drop your resume
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              PDF or Word (.docx) · up to {UPLOAD_CONFIG.maxSizeMB} MB
-            </p>
+      <div aria-live="polite">
+        {hasImport && (
+          <div className="mt-3 flex max-w-md items-center gap-3 rounded-xl border border-border bg-card px-4 py-2.5 text-left shadow-sm">
+            <FileText className="size-5 shrink-0 text-brand" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-foreground">Imported: {file?.name ?? importedFileName}</p>
+              <p className="text-xs text-muted-foreground">
+                {file ? `${formatSize(file.size)} · ` : ""}Pick a template to continue.
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={reset}
+              aria-label="Remove uploaded resume"
+              className="rounded-full"
+            >
+              <X />
+            </Button>
           </div>
         )}
-      </label>
-
-      {hasImport && (
-        <div className="mt-3 flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-left">
-          <FileText className="size-5 shrink-0 text-brand" />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-foreground">
-              {file?.name ?? importedFileName}
-            </p>
-            {file && <p className="text-xs text-muted-foreground">{formatSize(file.size)}</p>}
-          </div>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={reset}
-            aria-label="Remove uploaded resume"
-            className="rounded-full"
-          >
-            <X />
-          </Button>
-        </div>
-      )}
+      </div>
 
       {status === "error" && (
-        <p role="alert" className="mt-3 text-sm text-destructive">
+        <p
+          role="alert"
+          className={cn(
+            "mt-3 text-sm font-medium",
+            inverted ? "rounded-lg bg-white px-3 py-2 text-destructive" : "text-destructive"
+          )}
+        >
           {error}
         </p>
       )}

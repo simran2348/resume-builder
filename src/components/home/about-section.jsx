@@ -1,57 +1,60 @@
 import { Check } from "lucide-react";
 
 import SectionHeading from "@/components/home/section-heading";
+import { DotGrid } from "@/components/ui/decor";
 import { ABOUT_SECTION } from "@/constants/home";
 
 export default function AboutSection() {
   return (
-    <section id="about" aria-labelledby="about-title" className="scroll-mt-8 px-4 py-20 sm:px-6">
-      <div className="mx-auto max-w-5xl">
-        <SectionHeading id="about-title" title={ABOUT_SECTION.title} />
-
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-start">
-          <div className="space-y-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+    <section id="about" aria-labelledby="about-title" className="scroll-mt-8 px-4 py-24 sm:px-6 lg:px-8">
+      <div className="reveal mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
+        <div>
+          <SectionHeading
+            id="about-title"
+            align="left"
+            eyebrow={ABOUT_SECTION.eyebrow}
+            title={ABOUT_SECTION.title}
+            className="mb-6"
+          />
+          <div className="max-w-xl space-y-4 text-lg leading-relaxed text-pretty text-muted-foreground">
             {ABOUT_SECTION.intro.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
-            <p className="border-l-2 border-brand pl-4 font-medium text-foreground">{ABOUT_SECTION.promise}</p>
           </div>
+        </div>
 
-          <div className="rounded-2xl border border-border bg-card/80 p-6 shadow-sm backdrop-blur-sm">
-            <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
-              {ABOUT_SECTION.principlesTitle}
-            </h3>
-            <ul className="mt-4 space-y-2.5">
+        <div className="relative pt-10 sm:pt-12">
+          <DotGrid className="-right-6 -bottom-8 hidden size-40 sm:block" />
+
+          {/* Handwritten note pointing at the card */}
+          <p
+            aria-hidden
+            className="absolute top-0 right-2 flex -rotate-3 items-end gap-1 font-hand text-2xl text-brand sm:right-8 sm:text-[1.7rem]"
+          >
+            {ABOUT_SECTION.annotation}
+            <svg viewBox="0 0 40 40" fill="none" className="mb-[-14px] size-8 rotate-12 sm:size-9">
+              <path
+                d="M6 6 C 22 6, 30 14, 30 30 M30 30 L 24 24 M30 30 L 35 23"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </p>
+
+          <div className="relative rounded-3xl border border-border bg-card p-7 shadow-[0_20px_50px_-28px_rgba(15,23,42,0.3)] sm:p-8">
+            <h3 className="text-sm font-semibold text-muted-foreground">{ABOUT_SECTION.principlesTitle}</h3>
+            <ul className="mt-5 space-y-3.5">
               {ABOUT_SECTION.principles.map((item) => (
-                <li key={item} className="flex items-center gap-3 text-sm text-foreground">
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-glow text-brand">
-                    <Check className="size-3" strokeWidth={3} aria-hidden />
+                <li key={item} className="flex items-center gap-3 text-base font-medium text-heading">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-glow text-brand">
+                    <Check className="size-3.5" strokeWidth={3} aria-hidden />
                   </span>
                   {item}
                 </li>
               ))}
             </ul>
           </div>
-        </div>
-
-        <div className="mt-16">
-          <h3 className="text-center text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            {ABOUT_SECTION.workflowTitle}
-          </h3>
-          <p className="mx-auto mt-2 max-w-2xl text-center text-muted-foreground">{ABOUT_SECTION.workflowIntro}</p>
-          <ol className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-9">
-            {ABOUT_SECTION.workflow.map((step, index) => (
-              <li
-                key={step}
-                className="flex items-center gap-3 rounded-xl border border-border bg-card/80 px-3 py-3 text-sm font-medium text-foreground backdrop-blur-sm lg:flex-col lg:items-start lg:gap-2"
-              >
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-semibold text-brand-foreground">
-                  {index + 1}
-                </span>
-                {step}
-              </li>
-            ))}
-          </ol>
         </div>
       </div>
     </section>

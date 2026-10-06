@@ -15,6 +15,7 @@ export const metadata = {
 export default function PrivacyPage() {
   return (
     <ContentPage
+      eyebrow="Legal"
       title="Privacy Policy"
       meta={`Last updated: ${SITE.legalLastUpdated}`}
       intro={`Your privacy matters, especially when you're creating a document full of personal and professional information. This policy explains what happens to your data when you use ${SITE.name}.`}

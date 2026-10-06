@@ -4,35 +4,45 @@ import { FOOTER_CONTENT } from "@/constants/home";
 
 export default function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-start md:justify-between">
-        <div className="max-w-sm">
-          <Link href="/" className="rounded-md text-lg font-bold tracking-tight text-foreground outline-none focus-visible:ring-3 focus-visible:ring-brand/40">
-            {FOOTER_CONTENT.brand}
-            <span className="text-brand" aria-hidden>
-              .
-            </span>
-          </Link>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{FOOTER_CONTENT.tagline}</p>
-        </div>
+    <footer className="mt-auto border-t border-border">
+      <div className="px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-2">
+          <div className="max-w-xs">
+            <Link
+              href="/"
+              className="rounded-md text-xl font-bold tracking-tight text-heading outline-none focus-visible:ring-3 focus-visible:ring-brand/40"
+            >
+              {FOOTER_CONTENT.brand}
+              <span className="text-brand" aria-hidden>
+                .
+              </span>
+            </Link>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{FOOTER_CONTENT.tagline}</p>
+          </div>
 
-        <nav aria-label="Footer">
-          <ul className="grid grid-cols-2 gap-x-10 gap-y-3 sm:flex sm:flex-wrap sm:gap-x-8">
-            {FOOTER_CONTENT.links.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="rounded-sm text-sm text-muted-foreground transition-colors outline-none hover:text-brand focus-visible:ring-3 focus-visible:ring-brand/40"
-                >
-                  {link.label}
-                </Link>
-              </li>
+          <nav aria-label="Footer" className="grid grid-cols-2 gap-8">
+            {FOOTER_CONTENT.groups.map((group) => (
+              <div key={group.title}>
+                <h2 className="text-sm font-semibold text-heading">{group.title}</h2>
+                <ul className="mt-4 space-y-3">
+                  {group.links.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="rounded-sm text-sm text-muted-foreground transition-colors outline-none hover:text-brand focus-visible:ring-3 focus-visible:ring-brand/40"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
-        </nav>
+          </nav>
+        </div>
       </div>
 
-      <div className="border-t border-border px-4 py-4 text-center text-xs text-muted-foreground">
+      <div className="border-t border-border px-4 py-5 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} {FOOTER_CONTENT.brand}. All rights reserved.
       </div>
     </footer>

@@ -51,6 +51,10 @@
   --color-brand-light: var(--brand-blue-light);
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-glow: var(--brand-blue-glow);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-deep: var(--brand-deep);
+  --color-heading: var(--heading);
+  --font-hand: var(--font-caveat), cursive;
 }
 
 :root {
@@ -90,6 +94,10 @@
   --brand-blue-light: #60a5fa;
   --brand-blue-glow: rgba(37, 99, 235, 0.15);
   --brand-foreground: #ffffff;
+  /* Landing design system: very light blue surfaces, a deeper blue for gradients, slate-navy headings. */
+  --brand-soft: #f1f6ff;
+  --brand-deep: #1d4ed8;
+  --heading: #0f172a;
 }
 
 .dark {
@@ -128,6 +136,9 @@
   --brand-blue-light: #93c5fd;
   --brand-blue-glow: rgba(59, 130, 246, 0.18);
   --brand-foreground: #ffffff;
+  --brand-soft: rgba(59, 130, 246, 0.07);
+  --brand-deep: #1e40af;
+  --heading: oklch(0.985 0 0);
 }
 
 @layer base {
@@ -140,4 +151,50 @@
   html {
     @apply font-sans;
   }
+}
+
+/* Smooth in-page scrolling (e.g. the hero's scroll arrow). <html data-scroll-behavior="smooth"> tells Next.js to
+   jump instantly on route changes. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Fade + small upward movement as a section scrolls into view. Pure CSS: browsers without scroll-driven
+   animations, and anyone who prefers reduced motion, simply see the content. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+/* Gentle drift for the hero's scroll cue and floating cards. */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@utility animate-float {
+  animation: float-y 3.2s ease-in-out infinite;
 }

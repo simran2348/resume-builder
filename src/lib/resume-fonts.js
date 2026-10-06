@@ -1,4 +1,5 @@
 import {
+  Caveat,
   EB_Garamond,
   Inter,
   Lato,
@@ -13,6 +14,9 @@ import {
 
 // App font (also a resume font option).
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
+// Handwritten annotation accent on the landing page (self-hosted like every other font).
+const caveat = Caveat({ subsets: ["latin"], weight: ["500"], variable: "--font-caveat", preload: false });
 
 // Other fonts offered in the resume theme panel.
 // preload: false so a font file is only downloaded once a resume actually uses it.
@@ -43,6 +47,7 @@ export const resumeFontVariables = [
   lora,
   playfair,
   garamond,
+  caveat,
 ]
   .map((font) => font.variable)
   .join(" ");

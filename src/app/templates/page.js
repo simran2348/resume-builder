@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function TemplatesPage() {
   return (
-    <div className="relative flex min-h-screen flex-col">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip">
       <Background />
       <Header />
       <main className="flex-1">

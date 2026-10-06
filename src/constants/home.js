@@ -14,36 +14,36 @@ import {
   ScanText,
 } from "lucide-react";
 
-import { SITE } from "@/constants/site";
+import { NAV_LINKS, SITE } from "@/constants/site";
 
 export const HERO_CONTENT = {
-  badge: "Free · No account needed",
-  title: "Build a resume that gets read.",
-  subtitle: "Create a clean, professional, ATS-friendly resume for free.",
-  uploadTitle: "Upload existing resume",
-  uploadHint: "We read your details so you can keep editing instead of starting over.",
-  createButtonLabel: "Create new resume",
+  badge: "Free • No Account Required",
+  title: "Build a Resume That Gets Read",
+  subtitle: `Create a clean, professional, ATS-friendly resume for free. Upload an existing resume or start from scratch with ${SITE.name}.`,
+  uploadButtonLabel: "Upload Existing Resume",
+  createButtonLabel: "Create New Resume",
   // Upload parsing runs on this site's own server route and the file isn't stored (src/app/api/resume/parse).
-  privacyNote: "Your file is only used to read your details. It isn't stored.",
+  privacyNote: "Your file is only read to fill in your details. It isn't stored.",
+  benefits: ["Free to use", "No account required", "Privacy-focused"],
+  // Floating card beside the preview. Only formats the upload actually accepts (UPLOAD_CONFIG).
+  importCard: { title: "Import your resume", info: "From PDF or DOCX" },
 };
 
 export const UPLOAD_CONFIG = {
   maxSizeMB: 10,
   // Extensions and MIME types accepted by the upload box.
   acceptedExtensions: [".pdf", ".docx"],
-  acceptedMimeTypes: [
-    "application/pdf",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ],
+  acceptedMimeTypes: ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
 };
 
-// ---------- About / product explanation ----------
+// ---------- Why Rireki ----------
 
 export const ABOUT_SECTION = {
-  title: "The free resume builder that gets past ATS software",
+  eyebrow: `Why ${SITE.name}`,
+  title: "The Free Resume Builder That Gets Past ATS Software",
   intro: [
-    "Most job applications are read by software before they're ever read by a human. Applicant Tracking Systems (ATS) scan your resume first, and only then does it reach a recruiter's desk.",
-    `${SITE.name} is built around that reality. Instead of chasing colored sidebars, icon-heavy layouts or multi-column graphics, its recommended templates focus on what parsing software and recruiters both read easily.`,
+    `Most job applications are read by software before humans. ${SITE.name} focuses on clean, predictable resume formatting that is easier for Applicant Tracking Systems to parse.`,
+    "Instead of chasing icon-heavy layouts and decorative graphics, the recommended templates put your experience in a structure that both parsing software and recruiters read easily.",
   ],
   principlesTitle: "Built around",
   principles: [
@@ -55,117 +55,121 @@ export const ABOUT_SECTION = {
     "Easy editing",
     "Professional PDF output",
   ],
-  promise: "Clean, readable, professional — and easy for both humans and ATS software to understand.",
-  workflowTitle: "The complete workflow, in one place",
-  workflowIntro: "You see the formatted resume update while you edit, so there's no guessing what the final page looks like.",
-  // Mirrors the builder steps and features.
-  workflow: [
-    "Personal details",
-    "Work experience",
-    "Education",
-    "Skills",
-    "Projects",
-    "Section reordering",
-    "Template selection",
-    "Live preview",
-    "PDF export",
-  ],
+  annotation: "Clean. Readable. Professional.",
 };
 
 // ---------- Why ATS-friendly formatting matters ----------
 
 export const ATS_SECTION = {
-  title: "Why an ATS-friendly resume builder matters",
+  eyebrow: "ATS basics",
+  title: "Why ATS-Friendly Formatting Matters",
   intro:
     "Applicant Tracking Systems turn your resume into structured data so employers can search and filter candidates. When the layout is hard to read, important details can be missed or scrambled.",
-  scansTitle: "What ATS software looks for",
-  scans: ["Keywords from the job description", "Dates and durations", "Section headings", "Resume structure", "Relevant experience"],
-  risksTitle: "What can make parsing harder",
-  risks: ["Multi-column layouts", "Tables and text boxes", "Graphics and icons", "Image-based headers"],
-  callout: "A resume should look good without sacrificing machine readability.",
-  approachTitle: `How ${SITE.name}'s recommended templates are designed`,
-  approach: ["Single-column layouts", "Standard section headings", "Standard, widely available fonts", "A predictable reading order"],
+  scansTitle: "ATS software commonly scans",
+  scans: ["Keywords", "Dates", "Section headings", "Skills", "Work experience", "Education"],
+  risksTitle: "Formatting that can be harder to parse",
+  risks: ["Multi-column layouts", "Tables", "Text boxes", "Image-based headers", "Decorative graphics"],
   // Some templates are two-column / photo designs (Sidebar, Split, Profile, ...), so be upfront about it.
-  note: "Designed to be broadly ATS-friendly. Prefer a photo or a two-column design? Those are available too, clearly labelled, so you can choose with your eyes open.",
+  note: `${SITE.name}'s recommended templates are single-column with standard headings. Prefer a photo or a two-column design? Those are available too, clearly labelled, so you can choose knowingly.`,
 };
 
 // ---------- Features ----------
 
 export const DETAILS_SECTION = {
-  title: "Everything you need in a free resume builder",
-  subtitle: "Every feature below is available today, for free, without an account.",
+  eyebrow: "Features",
+  title: "Everything You Need in a Free Resume Builder",
+  subtitle: "Build, edit, import, reorder, preview, and download your resume without unnecessary barriers.",
 };
 
 // Each detail needs a `title` and an `info`; `icon` is optional.
 export const APP_DETAILS = [
   {
     icon: Eye,
-    title: "Live preview",
-    info: "Edit your resume and see the formatted result update as you type, page breaks included.",
+    title: "Live Preview",
+    info: "See your resume update while you edit it, page breaks included.",
   },
   {
     icon: ArrowDownUp,
-    title: "Drag-and-drop section reordering",
-    info: "Move sections such as Experience, Education, Skills and Projects into the order that suits the role.",
+    title: "Drag-and-Drop Section Reordering",
+    info: "Rearrange sections such as Experience, Education, Skills and Projects to control the structure of your resume.",
   },
   {
     icon: LayoutTemplate,
-    title: "11 templates to choose from",
+    title: "11 Templates",
     info: "Classic, Centered, Elegant, Minimal, Timeline and more. Filter by photo or columns, and switch at any time without losing your content.",
   },
   {
     icon: FileDown,
-    title: "Free PDF download",
-    info: "Save a clean, print-ready PDF from your browser's print dialog. No watermark, real selectable text and clickable links.",
+    title: "Free PDF Download",
+    info: "Save your finished resume as a PDF from your browser's print dialog. No watermark, selectable text and clickable links.",
   },
   {
     icon: FileUp,
-    title: "Upload and import",
-    info: "Upload an existing PDF or Word (.docx) resume and your details are pulled into editable fields. Review them, then keep going.",
+    title: "Upload and Import",
+    info: "Import an existing PDF or Word (.docx) resume instead of retyping it. Review the imported details, then keep editing.",
   },
   {
     icon: ScanText,
-    title: "Example content",
+    title: "Example Content",
     info: "Every template shows a complete example resume, so you can see how it looks before you type a word.",
   },
   {
     icon: HardDrive,
-    title: "Autosave in your browser",
-    info: "Your work is saved locally in your browser so you can continue editing without creating an account. Download a backup file whenever you like.",
+    title: "Autosave in Your Browser",
+    info: "Your work is saved in your browser's local storage as you go. Download a backup file whenever you like.",
   },
   {
     icon: Paintbrush,
-    title: "Make it yours",
+    title: "Make It Yours",
     info: "Adjust fonts, sizes, colours, spacing and dividers, and see every change on the page immediately.",
   },
   {
     icon: ClipboardCopy,
-    title: "Copy as plain text",
+    title: "Copy as Plain Text",
     info: "Copy or download a plain-text version for job portals that ask you to paste your resume.",
   },
 ];
 
+// ---------- How it works ----------
+
+export const WORKFLOW_SECTION = {
+  eyebrow: "How it works",
+  title: "From Blank Page to PDF in Five Steps",
+  steps: [
+    { title: "Start", info: "Upload an existing resume or create a new one." },
+    { title: "Edit", info: "Enter your personal details, experience, education, skills, and projects." },
+    { title: "Customize", info: "Reorder sections and choose an ATS-friendly template." },
+    { title: "Preview", info: "See the final resume update live as you type." },
+    { title: "Download", info: "Export the finished resume as a PDF." },
+  ],
+};
+
 // ---------- Comparison ----------
 
+// Kept generic and restrained on purpose: no named competitors, and "often / sometimes / varies" for others.
 export const COMPARISON_SECTION = {
-  title: "A simpler alternative to traditional resume builders",
+  eyebrow: "Compare",
+  title: "A Simpler Way to Build Your Resume",
   intro:
-    "Popular builders such as Indeed Resume Builder, LinkedIn's resume tools and Zety are often tied to an account, a job platform or a paid plan. They can be great tools, but sometimes you just want to make a good resume and download it.",
-  pointsTitle: `What you get with ${SITE.name}`,
-  points: [
-    { title: "No account required", info: "Open the builder and start. There's no sign-up step." },
-    { title: "No email required", info: "We never ask for your email address to build or download a resume." },
-    { title: "Free PDF download", info: "Downloading is free, with no watermark and no paywall at the last step." },
-    { title: "Start from what you have", info: "Upload an existing resume and continue editing instead of retyping everything." },
-    { title: "Privacy-focused", info: "Your resume is saved in your browser, not on our servers." },
+    "Many resume builders are great tools, but they are often tied to an account, a job platform or a paid plan. Sometimes you just want to make a good resume and download it.",
+  columns: [SITE.name, "Traditional resume builders"],
+  // `value`: true = yes, false = no; `other`: a short text answer.
+  rows: [
+    { label: "Account required", value: false, other: "Often" },
+    { label: "Email required", value: false, other: "Often" },
+    { label: "Premium tier blocking download", value: false, other: "Sometimes" },
+    { label: "Import existing resume", value: true, other: "Varies" },
+    { label: "ATS-friendly templates", value: true, other: "Varies" },
+    { label: "Live preview", value: true, other: "Yes" },
   ],
 };
 
 // ---------- FAQ ----------
 
 export const FAQ_SECTION = {
-  title: "Frequently asked questions",
-  subtitle: "Can't find what you're looking for? Get in touch through our Contact page.",
+  eyebrow: "FAQ",
+  title: "Frequently Asked Questions",
+  subtitle: "Straight answers about how the builder works, what it stores and what it doesn't.",
 };
 
 // Each FAQ needs a `question` and an `answer`. An answer can be a string, or an array of
@@ -199,14 +203,22 @@ export const FAQS = [
     question: "What is the difference between a CV and a resume?",
     answer: [
       "A resume is usually a concise summary of your most relevant experience, tailored to a specific job and often one or two pages long. A CV (curriculum vitae) is typically more comprehensive and is common in academic, research and medical contexts.",
-      "Terminology varies by country: in the UK and much of Europe, \"CV\" is often used for what Americans call a resume.",
+      'Terminology varies by country: in the UK and much of Europe, "CV" is often used for what Americans call a resume.',
     ],
   },
   {
     question: "Should I make a different resume for every job application?",
     answer: [
       "Tailoring your resume for each role is recommended. Small changes can make it far more relevant, for example:",
-      { list: ["Your professional summary", "The skills you highlight", "Which experience you emphasise", "The order of your sections", "Your achievement bullets"] },
+      {
+        list: [
+          "Your professional summary",
+          "The skills you highlight",
+          "Which experience you emphasise",
+          "The order of your sections",
+          "Your achievement bullets",
+        ],
+      },
     ],
   },
   {
@@ -231,7 +243,7 @@ export const FAQS = [
           "Anyone with access to your browser profile can see it.",
         ],
       },
-      "Download your PDF, and use \"Save backup\" on the Preview & download step to keep a copy you can restore later.",
+      'Download your PDF, and use "Save backup" on the Preview & download step to keep a copy you can restore later.',
     ],
   },
   {
@@ -247,13 +259,25 @@ export const FAQS = [
   },
 ];
 
+// ---------- Final call to action ----------
+
+export const CTA_SECTION = {
+  title: "Ready to Build Your Resume?",
+  subtitle: "Create a clean, professional resume without unnecessary sign-ups, paywalls, or complexity.",
+};
+
 export const FOOTER_CONTENT = {
   brand: SITE.name,
-  tagline: SITE.tagline,
-  links: [
-    { label: "About us", href: "/about" },
-    { label: "Contact us", href: "/contact" },
-    { label: "Privacy policy", href: "/privacy" },
-    { label: "Terms & conditions", href: "/terms" },
+  tagline: "A free resume builder focused on clean, professional, ATS-friendly resumes.",
+  // "Upload Resume" points at the hero, where the upload button lives.
+  groups: [
+    {
+      title: "Product",
+      links: [
+        { label: "Create Resume", href: "/templates" },
+        { label: "Upload Resume", href: "/#get-started" },
+      ],
+    },
+    { title: "Information", links: NAV_LINKS },
   ],
 };

@@ -2,15 +2,17 @@ import Footer from "@/components/footer";
 import AboutSection from "@/components/home/about-section";
 import AtsSection from "@/components/home/ats-section";
 import ComparisonSection from "@/components/home/comparison-section";
+import CtaSection from "@/components/home/cta-section";
 import DetailsSection from "@/components/home/details-section";
 import FaqSection from "@/components/home/faq-section";
 import Hero from "@/components/home/hero";
+import WorkflowSection from "@/components/home/workflow-section";
 import Background from "@/components/ui/background";
 import Header from "@/components/ui/header";
 
 export default function Home() {
   return (
-    <div className="relative flex min-h-screen flex-col">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip">
       <Background />
       <Header />
       <main>
@@ -18,8 +20,10 @@ export default function Home() {
         <AboutSection />
         <AtsSection />
         <DetailsSection />
+        <WorkflowSection />
         <ComparisonSection />
         <FaqSection />
+        <CtaSection />
       </main>
       <Footer />
     </div>

@@ -11,6 +11,7 @@ export const metadata = {
 export default function ContactPage() {
   return (
     <ContentPage
+      eyebrow="Contact"
       title="Contact Us"
       intro={`Have a question, found a problem, or have an idea that could make ${SITE.name} better? We'd love to hear from you.`}
     >
