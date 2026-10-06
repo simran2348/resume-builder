@@ -11,6 +11,7 @@ export const metadata = {
 // Keep every statement in line with the implementation:
 // - resume data: zustand persist → localStorage ("resume-builder", "imported-resume")
 // - uploads: POST /api/resume/parse, parsed in memory, nothing stored, no third-party service
+// - contact form: src/app/contact/actions.js emails name, email and message to us through Resend; nothing is stored
 // - no analytics, advertising or tracking scripts; fonts are self-hosted via next/font
 export default function PrivacyPage() {
   return (
@@ -42,10 +43,21 @@ export default function PrivacyPage() {
         resume at any time from the home page.
       </p>
 
+      <h2>Contact form</h2>
+      <p>
+        If you send us a message through the <Link href="/contact">Contact page</Link>, we receive your name, email
+        address and message by email so we can reply. The message is delivered through our email provider,{" "}
+        <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">
+          Resend
+        </a>
+        , and isn&apos;t stored by {SITE.name} anywhere else. We only use these details to respond to you.
+      </p>
+
       <h2>Data sharing</h2>
       <p>
         {SITE.name} does not sell, rent or share your resume information. Because your resume is stored in your
-        browser, we never receive the information you type into the editor.
+        browser, we never receive the information you type into the editor. Contact form messages are shared only with
+        our email provider, to deliver them to us.
       </p>
 
       <h2>Local storage</h2>

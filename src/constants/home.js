@@ -228,7 +228,8 @@ export const FAQS = [
     question: "Does this website sell my data to third parties?",
     answer: [
       `No. ${SITE.name} does not sell your resume data. Editing, previewing and creating your PDF all happen in your browser.`,
-      "The one exception is importing: if you upload an existing resume, the file is sent to our server only so its text can be read. It isn't stored or shared, and the extracted details are sent straight back to your browser.",
+      "If you upload an existing resume, the file is sent to our server only so its text can be read. It isn't stored or shared, and the extracted details are sent straight back to your browser.",
+      "If you use the contact form, your name, email and message are emailed to us through our email provider so we can reply.",
     ],
   },
   {

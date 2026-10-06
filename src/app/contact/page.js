@@ -1,5 +1,4 @@
-import { Mail } from "lucide-react";
-
+import ContactForm from "@/components/contact-form";
 import ContentPage from "@/components/content-page";
 import { SITE } from "@/constants/site";
 
@@ -15,24 +14,9 @@ export default function ContactPage() {
       title="Contact Us"
       intro={`Have a question, found a problem, or have an idea that could make ${SITE.name} better? We'd love to hear from you.`}
     >
-      <h2>Get in touch</h2>
-      {SITE.contactEmail ? (
-        <>
-          <p>For questions, feedback, bug reports or suggestions, email us and we&apos;ll get back to you.</p>
-          <p>
-            <a href={`mailto:${SITE.contactEmail}`} className="inline-flex items-center gap-2">
-              <Mail className="size-4" aria-hidden />
-              {SITE.contactEmail}
-            </a>
-          </p>
-        </>
-      ) : (
-        // No public inbox has been configured yet (SITE.contactEmail in src/constants/site.js).
-        <p>
-          A public contact address for questions, feedback, bug reports and suggestions will be published here soon.
-          Thanks for your patience. The tips below will help us act on your message quickly once it&apos;s available.
-        </p>
-      )}
+      <h2>Send us a message</h2>
+      <p>For questions, feedback, bug reports or suggestions, fill in the form and we&apos;ll get back to you by email.</p>
+      <ContactForm />
 
       <h2>Bug reports</h2>
       <p>When reporting a problem, it helps to include:</p>
