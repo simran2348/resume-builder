@@ -61,9 +61,9 @@ export default function Hero() {
       <a
         href="#about"
         aria-label="Scroll to learn more"
-        className="absolute bottom-6 left-1/2 flex size-10 -translate-x-1/2 items-center justify-center rounded-full border border-border bg-card/70 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors outline-none hover:text-heading focus-visible:ring-3 focus-visible:ring-brand/40"
+        className="absolute bottom-6 left-1/2 flex size-10 -translate-x-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors outline-none hover:text-heading focus-visible:ring-3 focus-visible:ring-brand/40"
       >
-        <ChevronDown className="size-5 motion-safe:animate-float" aria-hidden />
+        <ChevronDown className="size-6 motion-safe:animate-float" aria-hidden />
       </a>
     </section>
   );

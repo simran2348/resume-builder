@@ -94,8 +94,8 @@ export const APP_DETAILS = [
   },
   {
     icon: LayoutTemplate,
-    title: "11 Templates",
-    info: "Classic, Centered, Elegant, Minimal, Timeline and more. Filter by photo or columns, and switch at any time without losing your content.",
+    title: "A Growing Template Library",
+    info: "Start with designs like Classic, Elegant, Minimal and Timeline, with more on the way. Filter by photo or columns, and switch any time without losing your content.",
   },
   {
     icon: FileDown,

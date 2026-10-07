@@ -34,13 +34,37 @@ export default function PrivacyPage() {
 
       <h2>Uploaded resumes</h2>
       <p>
-        If you choose to import an existing resume (PDF or Word .docx, up to 10 MB), the file is sent to our server so its
-        text can be extracted. The file is processed in memory, the extracted details are sent straight
-        back to your browser, and the file is not saved or shared with any third-party service.
+        Importing an existing resume is optional. You can always build your resume from scratch instead. If you do
+        upload one, this is exactly what happens:
       </p>
+      <ul>
+        <li>
+          Your browser checks that the file is a PDF or Word (.docx) document of 10 MB or less, then sends it to our
+          server.
+        </li>
+        <li>
+          Our server checks the file type and size again and reads the file in memory. The text is extracted with
+          open-source software that runs on our own server; the file is not passed to any third-party service, and no
+          AI is involved.
+        </li>
+        <li>
+          The text is split into sections by recognising common headings such as &ldquo;Experience&rdquo;,
+          &ldquo;Education&rdquo; and &ldquo;Skills&rdquo;, and your name, contact details and links are picked out.
+          Image-only or scanned PDFs contain no text and can&apos;t be imported.
+        </li>
+        <li>
+          The extracted details and the file&apos;s name are sent back to your browser. The file itself is then
+          discarded: it is never written to disk, saved in a database or kept on our server.
+        </li>
+        <li>
+          Your browser stores the extracted details (not the file) in local storage. When you open the editor, they
+          fill in only the fields that are still empty, so nothing you&apos;ve typed is overwritten.
+        </li>
+      </ul>
       <p>
-        The extracted details are then stored in your browser like the rest of your resume. You can remove an uploaded
-        resume at any time from the home page.
+        You can remove an imported resume at any time with the &times; button next to it on the home page, or by using
+        &ldquo;Reset resume&rdquo; in the editor. If a file can&apos;t be read, a technical error message may be logged
+        on our server; the contents of your resume are not intentionally logged.
       </p>
 
       <h2>Contact form</h2>
