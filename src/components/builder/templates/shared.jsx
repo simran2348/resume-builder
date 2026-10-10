@@ -15,7 +15,9 @@ export const tw = {
   // No background here: PagedDocument paints the page colour, with any PageBackground layered on top.
   root: "min-h-full font-(family-name:--tpl-body-font) text-(length:--tpl-body-size) leading-(--tpl-line-height) text-(--tpl-text)",
   name: "font-(family-name:--tpl-heading-font) text-(length:--tpl-name-size) leading-tight font-bold",
-  heading: "font-(family-name:--tpl-heading-font) text-(length:--tpl-heading-size) leading-snug break-after-avoid",
+  // Section titles. The weight comes from the theme ("Bold section titles") and wins over a template's own.
+  heading:
+    "font-(family-name:--tpl-heading-font) text-(length:--tpl-heading-size) leading-snug break-after-avoid [font-weight:var(--tpl-heading-weight)]!",
   // Keeps an entry (a job, a degree, ...) on one printed page.
   entry: "break-inside-avoid",
   title: "text-(length:--tpl-title-size)",
@@ -50,6 +52,8 @@ export function themeStyle(theme = DEFAULT_THEME) {
     "--tpl-body-font": fontStack(t.bodyFont),
     "--tpl-name-size": `${t.nameSize}px`,
     "--tpl-heading-size": `${t.headingSize}px`,
+    // Resolved per template by getTemplate(); falls back to the plain setting.
+    "--tpl-heading-weight": t.headingWeight ?? (t.boldHeadings === false ? 400 : 700),
     "--tpl-body-size": `${t.bodySize}px`,
     "--tpl-title-size": `${t.bodySize * 1.25}px`,
     "--tpl-small-size": `${t.bodySize * 0.9}px`,

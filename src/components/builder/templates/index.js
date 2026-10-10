@@ -52,6 +52,9 @@ const RESOLVED_COMPONENTS = Object.fromEntries(
     function ResolvedTemplate({ theme, resume, ...props }) {
       const resolvedTheme = { ...DEFAULT_THEME, ...theme };
       resolvedTheme.showContactIcons = resolvedTheme.showContactIcons ?? meta.contactIcons;
+      // Section title weight: the user's choice (bold / regular), else the template's own.
+      resolvedTheme.headingWeight =
+        resolvedTheme.boldHeadings == null ? (meta.headingWeight ?? 700) : resolvedTheme.boldHeadings ? 700 : 400;
       const sectionTitles = { ...DEFAULT_SECTION_TITLES, ...meta.sectionTitles };
       for (const [key, title] of Object.entries(resume.sectionTitles ?? {})) {
         if (title?.trim()) sectionTitles[key] = title.trim();

@@ -80,9 +80,9 @@ export const useBuilderStore = create(
             : [...state.visitedSteps, state.currentStep],
         })),
       setFormWidth: (formWidth) => set({ formWidth }),
-      // Changing template resets per-template theme defaults (contact icons).
+      // Changing template resets per-template theme defaults (contact icons, bold section titles).
       setTemplate: (templateId) =>
-        set((state) => ({ templateId, theme: { ...state.theme, showContactIcons: null } })),
+        set((state) => ({ templateId, theme: { ...state.theme, showContactIcons: null, boldHeadings: null } })),
       // From the templates screen; an accent picked there is carried into the theme.
       chooseTemplate: (templateId, accent) =>
         set((state) => ({
@@ -90,6 +90,7 @@ export const useBuilderStore = create(
           theme: {
             ...state.theme,
             showContactIcons: null,
+            boldHeadings: null,
             ...(accent && { accent, photoBorderColor: accent }),
           },
         })),

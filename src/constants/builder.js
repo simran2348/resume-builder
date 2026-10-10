@@ -128,6 +128,8 @@ export const ACCENT_COLORS = [
 // `columns` drives the columns filter. `contactIcons` is the template's default for the
 // "Include contact icons" theme option. Colours, fonts and sizes come from the shared theme (DEFAULT_THEME).
 // `skillLayout` is "list" or "categories"; see RESUME_TEMPLATES below.
+// `headingWeight` is the font weight of section titles when the user hasn't chosen (default 700, bold);
+// the "Bold section titles" theme option overrides it.
 const BASE_TEMPLATES = [
   {
     id: "classic",
@@ -153,6 +155,7 @@ const BASE_TEMPLATES = [
     id: "elegant",
     name: "Elegant",
     description: "Centered header with a monogram. Timeless and formal.",
+    headingWeight: 400,
     supportsPhoto: false,
     columns: 1,
     recommended: true,
@@ -190,6 +193,7 @@ const BASE_TEMPLATES = [
     id: "minimal",
     name: "Minimal",
     description: "Letter-spaced header and centered section titles. Quiet and clean.",
+    headingWeight: 600,
     supportsPhoto: false,
     columns: 1,
     recommended: false,
@@ -347,6 +351,8 @@ export const DEFAULT_THEME = {
   showContactIcons: null,
   // Thin rules between sections / under headings, in templates that use them.
   showDividers: true,
+  // Section titles in bold. null = follow the selected template's `headingWeight`; reset with the template.
+  boldHeadings: null,
 };
 
 // Slider ranges for the theme panel.

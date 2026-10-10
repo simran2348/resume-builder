@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "../context/ThemeContext";
 import { SITE } from "@/constants/site";
@@ -22,9 +23,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${resumeFontVariables} h-full antialiased`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${resumeFontVariables} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
+          <Analytics />
           <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>
       </body>

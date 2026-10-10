@@ -21,6 +21,8 @@ export default function ThemePanel() {
   const template = getTemplate(templateId);
   const { supportsPhoto } = template;
   const showContactIcons = theme.showContactIcons ?? template.contactIcons;
+  const boldByDefault = (template.headingWeight ?? 700) >= 600;
+  const boldHeadings = theme.boldHeadings ?? boldByDefault;
 
   const slider = (key, label) => (
     <SliderField label={label} value={theme[key]} limits={THEME_LIMITS[key]} onChange={(v) => updateTheme(key, v)} />
@@ -58,6 +60,15 @@ export default function ThemePanel() {
         >
           Shows icons next to email, phone, location and links. {template.name} has them{" "}
           {template.contactIcons ? "on" : "off"} by default.
+        </CheckboxField>
+        <CheckboxField
+          id="theme-bold-headings"
+          label="Bold section titles"
+          checked={boldHeadings}
+          onChange={(checked) => updateTheme("boldHeadings", checked)}
+        >
+          Makes headings like Experience and Education bold. {template.name} has them{" "}
+          {boldByDefault ? "bold" : "regular"} by default.
         </CheckboxField>
         <CheckboxField
           id="theme-dividers"
