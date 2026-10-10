@@ -456,7 +456,15 @@ export const LIST_SECTIONS = {
       { name: "startDate", label: "Start date", type: "month" },
       { name: "endDate", label: "End date", type: "month", disabledBy: "current" },
       { name: "current", label: "Ongoing project", type: "checkbox", span: 2 },
-      { name: "description", label: "Description", type: "textarea", span: 2, placeholder: "What it does, your contribution and the impact…" },
+      // `bullets` adds a list button: the description can be a paragraph, bullet points ("- " lines) or both.
+      {
+        name: "description",
+        label: "Description",
+        type: "textarea",
+        bullets: true,
+        span: 2,
+        placeholder: "What it does, your contribution and the impact. Write a paragraph, or use the list button for bullet points.",
+      },
     ],
   },
   languages: {

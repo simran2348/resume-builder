@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Bold, Italic } from "lucide-react";
+import { Bold, Italic, List } from "lucide-react";
 
 import AutoTextarea from "@/components/builder/auto-textarea";
-import { BOLD, ITALIC, toggleMarker } from "@/lib/rich-text";
+import { BOLD, ITALIC, continueBulletList, toggleBulletLines, toggleMarker } from "@/lib/rich-text";
 import { cn } from "@/lib/utils";
 
 const FORMATS = [
@@ -14,7 +14,9 @@ const FORMATS = [
 
 // Auto-growing textarea with bold / italic: a small toolbar shows while focused, and ⌘/Ctrl+B / ⌘/Ctrl+I
 // toggle formatting on the selection. Formatting is stored as **bold** / *italic* markers (see rich-text.js).
-export default function RichTextarea({ value, onChange, onKeyDown, onFocus, onBlur, className, ...props }) {
+// With `bullets`, a list button (⌘/Ctrl+Shift+8) turns the selected lines into "- " bullet points and Enter
+// continues the list; the field can then hold paragraphs, bullet points or both.
+export default function RichTextarea({ value, onChange, onKeyDown, onFocus, onBlur, className, bullets = false, ...props }) {
   const ref = useRef(null);
   const [focused, setFocused] = useState(false);
 
@@ -29,7 +31,39 @@ export default function RichTextarea({ value, onChange, onKeyDown, onFocus, onBl
     });
   }
 
+  // Applies an edit that returns new text and a selection, then restores the selection after re-render.
+  function applyEdit(next, start, end = start) {
+    const el = ref.current;
+    onChange(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(start, end);
+    });
+  }
+
+  function toggleBullets() {
+    const el = ref.current;
+    const next = toggleBulletLines(value, el.selectionStart, el.selectionEnd);
+    applyEdit(next.text, next.start, next.end);
+  }
+
   function handleKeyDown(e) {
+    if (bullets) {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === "8" || e.key === "*")) {
+        e.preventDefault();
+        toggleBullets();
+        return;
+      }
+      const el = ref.current;
+      if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && el.selectionStart === el.selectionEnd) {
+        const next = continueBulletList(value, el.selectionStart);
+        if (next) {
+          e.preventDefault();
+          applyEdit(next.text, next.caret);
+          return;
+        }
+      }
+    }
     const format = (e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && FORMATS.find((f) => f.key === e.key.toLowerCase());
     if (format) {
       e.preventDefault();
@@ -80,6 +114,19 @@ export default function RichTextarea({ value, onChange, onKeyDown, onFocus, onBl
             <Icon className="size-3.5" strokeWidth={2.5} />
           </button>
         ))}
+        {bullets && (
+          <button
+            type="button"
+            tabIndex={-1}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={toggleBullets}
+            aria-label="Bullet list (Ctrl/⌘+Shift+8)"
+            title="Bullet list (Ctrl/⌘+Shift+8)"
+            className="flex size-6 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <List className="size-3.5" strokeWidth={2.5} />
+          </button>
+        )}
       </div>
     </div>
   );

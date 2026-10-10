@@ -6,7 +6,7 @@ import {
   LANGUAGE_LEVELS,
   LIST_SECTIONS,
 } from "@/constants/builder";
-import { stripRichText } from "@/lib/rich-text";
+import { parseBlocks, stripRichText } from "@/lib/rich-text";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -295,7 +295,9 @@ export function toPlainText(resume) {
       resume.projects.flatMap((p) => [
         [p.name, p.role].filter(Boolean).join(" – ") + (range(p) ? ` (${range(p)})` : ""),
         ...(p.link ? [p.link] : []),
-        ...(p.description ? [p.description] : []),
+        ...(p.description
+          ? parseBlocks(p.description).flatMap((b) => (b.type === "list" ? b.items.map((item) => `• ${item}`) : [b.text]))
+          : []),
       ]),
     hobbies: () => (resume.hobbies.length ? [resume.hobbies.join(", ")] : []),
     languages: () => resume.languages.map((l) => [l.name, l.proficiency].filter(Boolean).join(": ")),

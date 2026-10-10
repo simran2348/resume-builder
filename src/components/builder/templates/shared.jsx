@@ -8,7 +8,7 @@
 import { Globe, Mail, MapPin, Phone } from "lucide-react";
 
 import { DEFAULT_SECTION_ORDER as DEFAULT_ORDER, DEFAULT_THEME, PHOTO_SHAPES, RESUME_FONTS } from "@/constants/builder";
-import { parseRichText } from "@/lib/rich-text";
+import { parseBlocks, parseRichText } from "@/lib/rich-text";
 import { cn } from "@/lib/utils";
 
 export const tw = {
@@ -104,11 +104,47 @@ function GitHubIcon(props) {
   );
 }
 
+// Profile sites whose links are shortened on the resume. `path` is the prefix before the username in a URL.
+const PROFILE_SITES = {
+  linkedin: { label: "linkedin", domain: "linkedin.com", path: "in/", url: "https://www.linkedin.com/in/" },
+  github: { label: "github", domain: "github.com", path: "", url: "https://github.com/" },
+};
+
+// The username from a LinkedIn / GitHub value, whether it was typed as a full URL
+// ("https://www.linkedin.com/in/jane-doe/"), a short one ("github.com/jane") or just the username.
+export function getProfileUsername(type, value) {
+  const site = PROFILE_SITES[type];
+  let text = value
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/[?#].*$/, "");
+  if (text.toLowerCase().startsWith(site.domain)) text = text.slice(site.domain.length);
+  text = text.replace(/^\/+/, "");
+  if (site.path && text.toLowerCase().startsWith(site.path)) text = text.slice(site.path.length);
+  return text.replace(/^@/, "").replace(/\/+$/, "");
+}
+
+// What a contact item shows on the resume. LinkedIn and GitHub are shortened: just the username next to
+// an icon (the icon already names the site), or "linkedin/username" without icons. Everything else,
+// including the portfolio website, is shown as typed.
+export function contactLabel(type, value, showIcons) {
+  if (!PROFILE_SITES[type]) return value;
+  const username = getProfileUsername(type, value);
+  if (!username) return value;
+  return showIcons ? username : `${PROFILE_SITES[type].label}/${username}`;
+}
+
 // Turns a contact value into a link target: mail app for email, dialer for phone, web page for links.
 // Kept as real <a> elements so they stay clickable in the downloaded PDF.
 export function toHref(type, value) {
   const text = value.trim();
   if (!text) return null;
+  // A bare username still links to the right profile.
+  if (PROFILE_SITES[type] && !text.toLowerCase().includes(PROFILE_SITES[type].domain)) {
+    const username = getProfileUsername(type, text);
+    return username ? PROFILE_SITES[type].url + username : null;
+  }
   if (type === "email") return text.includes("@") ? `mailto:${text}` : null;
   if (type === "phone") {
     const digits = text.replace(/[^\d+]/g, "");
@@ -154,7 +190,7 @@ export function ContactList({ items, theme, layout = "inline", separator = "|", 
       <span className="inline-flex min-w-0 items-center gap-1.5">
         {showIcons && Icon && <Icon className={cn("size-[1.05em] shrink-0 text-(--tpl)", iconClassName)} />}
         <ResumeLink href={toHref(item.type, item.value)} className="break-words">
-          {item.value}
+          {contactLabel(item.type, item.value, showIcons)}
         </ResumeLink>
       </span>
     );
@@ -228,6 +264,23 @@ export function RichText({ text }) {
     if (segment.bold) node = <strong className="font-semibold">{node}</strong>;
     return <span key={i}>{node}</span>;
   });
+}
+
+// Text that may mix paragraphs and "- " bullet lines (see parseBlocks), e.g. a project description.
+export function RichBlocks({ text, className }) {
+  return (
+    <div className={cn("space-y-1", className)}>
+      {parseBlocks(text).map((block, i) =>
+        block.type === "list" ? (
+          <Bullets key={i} items={block.items} className="mt-0" />
+        ) : (
+          <p key={i} className="whitespace-pre-line">
+            <RichText text={block.text} />
+          </p>
+        )
+      )}
+    </div>
+  );
 }
 
 export function Bullets({ items, className }) {
@@ -323,11 +376,7 @@ export function ProjectsList({ items }) {
               <ResumeLink href={toHref("link", project.link)}>{project.link}</ResumeLink>
             </p>
           )}
-          {project.description && (
-            <p className="mt-0.5 whitespace-pre-line">
-              <RichText text={project.description} />
-            </p>
-          )}
+          {project.description && <RichBlocks text={project.description} className="mt-0.5" />}
         </div>
       ))}
     </div>

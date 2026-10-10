@@ -301,6 +301,7 @@ function Field({ section, item, field, error, hideLabel = false }) {
         value={item[field.name]}
         onChange={update}
         placeholder={field.placeholder}
+        bullets={field.bullets}
         className="min-h-20 bg-background leading-relaxed"
       />
     );

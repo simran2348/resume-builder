@@ -1,6 +1,7 @@
 // Minimal inline formatting for body text, stored as Markdown-style markers:
 //   **bold**   *italic*   (***both***)
 // Markers are written by the editor toolbar / shortcuts and rendered by <RichText> in the templates.
+// Fields that allow lists also treat lines starting with "- " as bullet points (see parseBlocks).
 
 export const BOLD = "**";
 export const ITALIC = "*";
@@ -59,4 +60,78 @@ export function toggleMarker(text, start, end, marker) {
     start: start + len,
     end: end + len,
   };
+}
+
+// ---------- Bullet lists ----------
+
+export const BULLET = "- ";
+// A bullet line: "- text" (also "• text" or "* text", as pasted from other documents).
+const BULLET_LINE_RE = /^\s*[-•*]\s+/;
+const isBulletLine = (line) => BULLET_LINE_RE.test(line) || /^\s*[-•]$/.test(line);
+
+// Splits text into blocks for rendering: consecutive bullet lines become one list, other lines stay
+// together as a paragraph (blank lines start a new one).
+//   [{ type: "paragraph", text }, { type: "list", items: [...] }]
+export function parseBlocks(text) {
+  const blocks = [];
+  for (const line of text.split("\n")) {
+    const last = blocks[blocks.length - 1];
+    if (BULLET_LINE_RE.test(line)) {
+      const item = line.replace(BULLET_LINE_RE, "").trim();
+      if (!item) continue;
+      if (last?.type === "list") last.items.push(item);
+      else blocks.push({ type: "list", items: [item] });
+    } else if (!line.trim()) {
+      // A blank line ends the current paragraph / list.
+      if (last && !last.closed) last.closed = true;
+    } else if (last?.type === "paragraph" && !last.closed) {
+      last.text += `\n${line}`;
+    } else {
+      blocks.push({ type: "paragraph", text: line });
+    }
+  }
+  return blocks.map(({ closed, ...block }) => block);
+}
+
+// Turns the lines touched by the selection [start, end) into bullets, or back into plain lines when they
+// all are bullets already. Returns the new text and selection.
+export function toggleBulletLines(text, start, end) {
+  const lineStart = text.lastIndexOf("\n", start - 1) + 1;
+  const nextBreak = text.indexOf("\n", end);
+  const lineEnd = nextBreak === -1 ? text.length : nextBreak;
+  const lines = text.slice(lineStart, lineEnd).split("\n");
+  const filled = lines.filter((line) => line.trim());
+  const remove = filled.length > 0 && filled.every(isBulletLine);
+
+  const nextLines = lines.map((line) => {
+    if (remove) return line.replace(BULLET_LINE_RE, "").replace(/^\s*[-•]$/, "");
+    // Leave blank lines alone, unless the selection is a single empty line (start a new list there).
+    if (!line.trim()) return lines.length === 1 ? BULLET : line;
+    return isBulletLine(line) ? line : BULLET + line.trimStart();
+  });
+  const replaced = nextLines.join("\n");
+  const delta = replaced.length - (lineEnd - lineStart);
+  const firstDelta = nextLines[0].length - lines[0].length;
+
+  return {
+    text: text.slice(0, lineStart) + replaced + text.slice(lineEnd),
+    start: Math.max(lineStart, start + firstDelta),
+    end: Math.max(lineStart, end + delta),
+  };
+}
+
+// Enter inside a bullet line: continue the list on a new line, or end it when the bullet is empty.
+// Returns the new text and caret position, or null when the caret isn't on a bullet line.
+export function continueBulletList(text, caret) {
+  const lineStart = text.lastIndexOf("\n", caret - 1) + 1;
+  const nextBreak = text.indexOf("\n", caret);
+  const line = text.slice(lineStart, nextBreak === -1 ? text.length : nextBreak);
+  if (!isBulletLine(line)) return null;
+
+  if (!line.replace(BULLET_LINE_RE, "").replace(/^\s*[-•]$/, "").trim()) {
+    // Empty bullet: drop the marker so the next line is a normal paragraph.
+    return { text: text.slice(0, lineStart) + text.slice(lineStart + line.length), caret: lineStart };
+  }
+  const insert = `\n${BULLET}`;
+  return { text: text.slice(0, caret) + insert + text.slice(caret), caret: caret + insert.length };
 }
