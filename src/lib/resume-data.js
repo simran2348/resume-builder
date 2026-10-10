@@ -167,8 +167,9 @@ export function isResumeEmpty(data) {
 // ---------- Mapping from an uploaded resume (best effort) ----------
 
 const MONTH_LOOKUP = Object.fromEntries(MONTHS.map((m, i) => [m.toLowerCase(), String(i + 1).padStart(2, "0")]));
-const DATE_PART = String.raw`(?:([A-Za-z]{3,9})\.?\s+)?(\d{4})`;
-const RANGE_RE = new RegExp(`${DATE_PART}\\s*(?:–|—|-|to)\\s*(?:${DATE_PART}|(present|current|now))`, "i");
+const DATE_PART = String.raw`(?:([A-Za-z]{3,9})\.?,?\s+)?((?:19|20)\d{2})`;
+const RANGE_RE = new RegExp(`${DATE_PART}\\s*(?:–|—|-|to|until)\\s*(?:${DATE_PART}|(present|current|now|ongoing|till date|today))`, "i");
+const SINGLE_DATE_RE = new RegExp(DATE_PART, "i");
 
 function toStoredDate(monthName, year) {
   if (!year) return "";
@@ -176,18 +177,27 @@ function toStoredDate(monthName, year) {
   return month ? `${year}-${month}` : year;
 }
 
-function splitEntry({ title = "", subtitle = "" }) {
-  const match = `${title} · ${subtitle}`.match(RANGE_RE);
-  const place = subtitle
-    .replace(RANGE_RE, "")
-    .split(/\s*[·|,]\s*/)
-    .find((part) => part.trim());
-  return {
-    place: place?.trim() ?? "",
-    startDate: match ? toStoredDate(match[1], match[2]) : "",
-    endDate: match ? toStoredDate(match[3], match[4]) : "",
-    current: Boolean(match?.[5]),
-  };
+// "Apr 2022 – Present" → { startDate: "2022-04", endDate: "", current: true }. A single date is the end date.
+function parseDateRange(text = "") {
+  const range = text.match(RANGE_RE);
+  if (range) {
+    return {
+      startDate: toStoredDate(range[1], range[2]),
+      endDate: toStoredDate(range[3], range[4]),
+      current: Boolean(range[5]),
+    };
+  }
+  return { startDate: "", endDate: parseSingleDate(text), current: false };
+}
+
+function parseSingleDate(text = "") {
+  const match = text.match(SINGLE_DATE_RE);
+  return match ? toStoredDate(match[1], match[2]) : "";
+}
+
+// An entry's bullets and loose text as one description: text as a paragraph, bullets as "- " lines.
+function toDescription(entry) {
+  return [...(entry.text ?? []), ...(entry.bullets ?? []).map((bullet) => `- ${bullet}`)].join("\n");
 }
 
 // Skills from an imported resume. Lines like "Frontend: React, Next.js" become categories.
@@ -214,25 +224,49 @@ function importedSkills(parsed) {
 export function fromParsedResume(parsed) {
   return {
     experience: (parsed.experience ?? []).map((entry) => {
-      const { place, ...dates } = splitEntry(entry);
+      // Without bullets, any descriptive text under the title becomes the bullets.
+      const bullets = entry.bullets?.length ? entry.bullets : (entry.text ?? []);
       return newExperience({
         role: entry.title,
-        company: place,
-        ...dates,
-        bullets: entry.bullets?.length ? entry.bullets.map((b) => newBullet(b)) : [newBullet()],
+        company: entry.org,
+        location: entry.location,
+        ...parseDateRange(entry.dates),
+        bullets: bullets.length ? bullets.map((b) => newBullet(b)) : [newBullet()],
       });
     }),
-    education: (parsed.education ?? []).map((entry) => {
-      const { place, ...dates } = splitEntry(entry);
-      return newListItem("education", { degree: entry.title, school: place, ...dates, description: entry.bullets?.join("\n") ?? "" });
-    }),
+    education: (parsed.education ?? []).map((entry) =>
+      newListItem("education", {
+        degree: entry.title,
+        school: entry.org,
+        location: entry.location,
+        grade: entry.grade,
+        ...parseDateRange(entry.dates),
+        description: toDescription(entry),
+      })
+    ),
     projects: (parsed.projects ?? []).map((entry) =>
-      newListItem("projects", { name: entry.title, role: entry.subtitle, description: entry.bullets?.join("\n") ?? "" })
+      newListItem("projects", {
+        name: entry.title,
+        role: entry.org,
+        link: entry.link,
+        ...parseDateRange(entry.dates),
+        description: toDescription(entry),
+      })
     ),
     ...importedSkills(parsed),
-    languages: (parsed.languages ?? []).map((name) => newListItem("languages", { name })),
-    certifications: (parsed.certifications ?? []).map((name) => newListItem("certifications", { name })),
-    achievements: (parsed.achievements ?? []).map((title) => newListItem("achievements", { title })),
+    hobbies: [...new Set(parsed.hobbies ?? [])].map((name) => newChip(name)),
+    languages: (parsed.languages ?? []).map(({ name, level }) =>
+      newListItem("languages", {
+        name,
+        proficiency: LANGUAGE_LEVELS.find((l) => l.value.toLowerCase() === level?.toLowerCase())?.value ?? "",
+      })
+    ),
+    certifications: (parsed.certifications ?? []).map(({ name, issuer, date }) =>
+      newListItem("certifications", { name, issuer, date: parseSingleDate(date) })
+    ),
+    achievements: (parsed.achievements ?? []).map(({ title, date, description }) =>
+      newListItem("achievements", { title, date: parseSingleDate(date), description })
+    ),
   };
 }
 

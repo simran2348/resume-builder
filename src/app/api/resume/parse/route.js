@@ -1,8 +1,8 @@
 import {
   MAX_UPLOAD_BYTES,
-  extractResumeText,
+  extractResumeDocument,
   getResumeFileKind,
-  parseResumeText,
+  parseResumeDocument,
 } from "@/lib/resume-parser";
 
 export async function POST(request) {
@@ -31,14 +31,14 @@ export async function POST(request) {
   }
 
   try {
-    const text = await extractResumeText(await file.arrayBuffer(), kind);
-    if (!text.trim()) {
+    const document = await extractResumeDocument(await file.arrayBuffer(), kind);
+    if (!document.lines.length) {
       return Response.json(
         { error: "We couldn't find any text in this file. Scanned resumes aren't supported yet." },
         { status: 422 }
       );
     }
-    return Response.json({ data: parseResumeText(text), fileName: file.name });
+    return Response.json({ data: parseResumeDocument(document), fileName: file.name });
   } catch (error) {
     console.error("Resume parse failed:", error);
     return Response.json(
