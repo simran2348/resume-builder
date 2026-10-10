@@ -6,7 +6,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Required-field errors for a builder step, keyed by field ("fullName", "summary", "role-<id>", ...).
 // Optional steps (projects, hobbies, ...) never have errors.
-export function getStepErrors(stepId, { personal, summary, experience, skills, education }) {
+export function getStepErrors(stepId, { personal, summary, experience, skills, skillCategories = [], education }) {
   const errors = {};
 
   if (stepId === "personal") {
@@ -27,8 +27,14 @@ export function getStepErrors(stepId, { personal, summary, experience, skills, e
     }
   }
 
-  if (stepId === "skills" && !skills.length) {
-    errors.skills = "Add at least one skill";
+  if (stepId === "skills") {
+    if (!skills.length) errors.skills = "Add at least one skill";
+    // A category that has skills needs a name, since it's printed as "Name: skill, skill".
+    for (const category of skillCategories) {
+      if (!category.name.trim() && skills.some((skill) => skill.categoryId === category.id)) {
+        errors[`category-${category.id}`] = "Give this category a name";
+      }
+    }
   }
 
   if (stepId === "education") {

@@ -1,15 +1,26 @@
 "use client";
 
-import { Eye } from "lucide-react";
+import { Check, Eye, Plus } from "lucide-react";
 
 import PagedDocument, { FitWidth } from "@/components/builder/paged-document";
 import FavoriteButton from "@/components/templates/favorite-button";
 import { Button } from "@/components/ui/button";
+import { MAX_COMPARE } from "@/constants/builder";
 import { SAMPLE_RESUME } from "@/constants/sample-resume";
 import { cn } from "@/lib/utils";
 
-export default function TemplateCard({ template, theme, isCurrent, onChoose, onPreview }) {
-
+// `isCompared` / `onToggleCompare` drive the "Compare" toggle; `compareFull` disables it when the
+// comparison already holds the maximum number of templates.
+export default function TemplateCard({
+  template,
+  theme,
+  isCurrent,
+  onChoose,
+  onPreview,
+  isCompared,
+  compareFull,
+  onToggleCompare,
+}) {
   return (
     <div className="group">
       <div className="relative transition-transform group-hover:-translate-y-0.5">
@@ -70,19 +81,24 @@ export default function TemplateCard({ template, theme, isCurrent, onChoose, onP
           </div>
           <p className="mt-0.5 text-xs text-muted-foreground">{template.description}</p>
         </div>
-        <div className="flex shrink-0 gap-1">
-          <Tag>{template.columns === 1 ? "1 col" : "2 col"}</Tag>
-          {template.supportsPhoto && <Tag>Photo</Tag>}
-        </div>
+        <button
+          type="button"
+          aria-pressed={isCompared}
+          onClick={() => onToggleCompare(template)}
+          disabled={!isCompared && compareFull}
+          title={!isCompared && compareFull ? `You can compare up to ${MAX_COMPARE} templates` : undefined}
+          aria-label={isCompared ? `Remove ${template.name} from comparison` : `Add ${template.name} to comparison`}
+          className={cn(
+            "flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/40 disabled:cursor-not-allowed disabled:opacity-50",
+            isCompared
+              ? "border-brand bg-brand text-brand-foreground"
+              : "border-border bg-background text-muted-foreground hover:border-brand/50 hover:text-brand"
+          )}
+        >
+          {isCompared ? <Check className="size-3.5" strokeWidth={3} /> : <Plus className="size-3.5" />}
+          {isCompared ? "Comparing" : "Compare"}
+        </button>
       </div>
     </div>
-  );
-}
-
-function Tag({ children }) {
-  return (
-    <span className="rounded-md border border-border bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
-      {children}
-    </span>
   );
 }

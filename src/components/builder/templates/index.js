@@ -42,12 +42,13 @@ const PAGE_BACKGROUNDS = {
   profile: ProfilePageBackground,
 };
 
-// Resolves per-template defaults before rendering: theme (contact icons) and section titles
-// (user override > template default > generic default).
+// Resolves per-template defaults before rendering: theme (contact icons), section titles
+// (user override > template default > generic default) and how skills are laid out.
+// "Grouped skills" variants reuse their base template's component and page background (`baseId`).
 // Built once per template so component identity stays stable across renders.
 const RESOLVED_COMPONENTS = Object.fromEntries(
   RESUME_TEMPLATES.map((meta) => {
-    const Template = TEMPLATE_COMPONENTS[meta.id];
+    const Template = TEMPLATE_COMPONENTS[meta.baseId ?? meta.id];
     function ResolvedTemplate({ theme, resume, ...props }) {
       const resolvedTheme = { ...DEFAULT_THEME, ...theme };
       resolvedTheme.showContactIcons = resolvedTheme.showContactIcons ?? meta.contactIcons;
@@ -56,7 +57,13 @@ const RESOLVED_COMPONENTS = Object.fromEntries(
         if (title?.trim()) sectionTitles[key] = title.trim();
       }
       const sectionOrder = resume.sectionOrder ?? ["summary", ...DEFAULT_SECTION_ORDER];
-      return <Template {...props} resume={{ ...resume, sectionTitles, sectionOrder }} theme={resolvedTheme} />;
+      return (
+        <Template
+          {...props}
+          resume={{ ...resume, sectionTitles, sectionOrder, skillLayout: meta.skillLayout }}
+          theme={resolvedTheme}
+        />
+      );
     }
     return [meta.id, ResolvedTemplate];
   })
@@ -74,7 +81,11 @@ export function getDefaultSectionTitle(templateId, section) {
 
 export function getTemplate(templateId) {
   const meta = RESUME_TEMPLATES.find((t) => t.id === templateId) ?? RESUME_TEMPLATES[0];
-  return { ...meta, Component: RESOLVED_COMPONENTS[meta.id], PageBackground: PAGE_BACKGROUNDS[meta.id] };
+  return {
+    ...meta,
+    Component: RESOLVED_COMPONENTS[meta.id],
+    PageBackground: PAGE_BACKGROUNDS[meta.baseId ?? meta.id],
+  };
 }
 
 export const ALL_TEMPLATES = RESUME_TEMPLATES.map((t) => getTemplate(t.id));

@@ -11,12 +11,13 @@ export function useStepValidation(stepId) {
   const summary = useBuilderStore((state) => state.summary);
   const experience = useBuilderStore((state) => state.experience);
   const skills = useBuilderStore((state) => state.skills);
+  const skillCategories = useBuilderStore((state) => state.skillCategories);
   const education = useBuilderStore((state) => state.education);
   const visited = useBuilderStore((state) => state.visitedSteps.includes(stepId));
 
   const errors = useMemo(
-    () => getStepErrors(stepId, { personal, summary, experience, skills, education }),
-    [stepId, personal, summary, experience, skills, education]
+    () => getStepErrors(stepId, { personal, summary, experience, skills, skillCategories, education }),
+    [stepId, personal, summary, experience, skills, skillCategories, education]
   );
   const errorCount = Object.keys(errors).length;
 

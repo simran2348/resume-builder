@@ -54,7 +54,10 @@ Rireki is built on a simple promise: **what you see is what you get, and it's fr
 ## Features
 
 - **Templates.** A growing library: Classic, Centered, Elegant, Executive, Banner, Minimal, Timeline, Sidebar, Split,
-  Profile and more, filterable by photo and columns, with favourites.
+  Profile and more, with switches for photo, two columns and grouped skills, favourites, and side-by-side comparison of up to 3 templates. Every single-column template also
+  comes in a **Grouped skills** version that shows skills by category ("Frontend: React, Next.js").
+- **Skill categories.** Optionally group skills into categories you name, reorder and rename; imported resumes with
+  "Category: skill, skill" lines keep their categories.
 - **Guided editor.** Personal details, summary, experience, skills and education, plus optional projects, hobbies,
   languages, achievements and certifications. Missing required fields are marked on each step.
 - **Rich editing.** Drag-and-drop reordering of jobs, bullet points, skills and whole sections; `**bold**` and

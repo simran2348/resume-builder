@@ -127,7 +127,8 @@ export const ACCENT_COLORS = [
 // `sectionTitles` overrides DEFAULT_SECTION_TITLES for that template (users can override both).
 // `columns` drives the columns filter. `contactIcons` is the template's default for the
 // "Include contact icons" theme option. Colours, fonts and sizes come from the shared theme (DEFAULT_THEME).
-export const RESUME_TEMPLATES = [
+// `skillLayout` is "list" or "categories"; see RESUME_TEMPLATES below.
+const BASE_TEMPLATES = [
   {
     id: "classic",
     name: "Classic",
@@ -233,22 +234,33 @@ export const RESUME_TEMPLATES = [
   },
 ];
 
-export const TEMPLATE_FILTERS = {
-  headshot: {
-    label: "Headshot",
-    options: [
-      { value: "with", label: "With photo" },
-      { value: "without", label: "Without photo" },
-    ],
-  },
-  columns: {
-    label: "Columns",
-    options: [
-      { value: "1", label: "One column" },
-      { value: "2", label: "Two columns" },
-    ],
-  },
-};
+// Every single-column template also comes in a "Grouped skills" version that shows skills by category
+// ("Frontend: React, Next.js"). It shares the base template's component (`baseId`) and sits right after it.
+export const RESUME_TEMPLATES = BASE_TEMPLATES.flatMap((template) => {
+  const base = { ...template, skillLayout: "list" };
+  if (template.columns !== 1) return [base];
+  return [
+    base,
+    {
+      ...base,
+      id: `${template.id}-skill-groups`,
+      baseId: template.id,
+      name: `${template.name} · Grouped skills`,
+      skillLayout: "categories",
+    },
+  ];
+});
+
+// Template gallery switches. Each is on or off, so the gallery shows one family of layouts at a time
+// (e.g. one column, no photo, simple skills list). `matches` says whether a template belongs with the switch on.
+export const TEMPLATE_TOGGLES = [
+  { key: "photo", label: "Photo", matches: (t) => t.supportsPhoto },
+  { key: "twoColumns", label: "Two columns", matches: (t) => t.columns === 2 },
+  { key: "groupedSkills", label: "Grouped skills", matches: (t) => t.skillLayout === "categories" },
+];
+
+// How many templates can be compared side by side on the templates screen.
+export const MAX_COMPARE = 3;
 
 // `required: true` fields must be filled for the step to count as complete (see src/lib/validation.js).
 export const PERSONAL_FIELD_GROUPS = [

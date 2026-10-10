@@ -400,6 +400,21 @@ export function SkillsList({ items, variant = "grid" }) {
   );
 }
 
+// Skills grouped by category, one row per category: "Frontend: React, Next.js". Plain text in reading order,
+// so it stays ATS-friendly. A category without a name shows just its skills.
+export function SkillGroups({ groups }) {
+  return (
+    <div className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1">
+      {groups.map((group, i) => (
+        <p key={i} className="col-span-2 grid grid-cols-subgrid">
+          <span className={cn(tw.strong, "font-semibold")}>{group.name && `${group.name}:`}</span>
+          <span>{group.items.join(", ")}</span>
+        </p>
+      ))}
+    </div>
+  );
+}
+
 // variant: "inline" (Name: Level) | "bars" (proficiency bars)
 export function LanguagesList({ items, variant = "inline" }) {
   if (variant === "bars") {
@@ -455,6 +470,10 @@ function renderSection(key, resume, variants) {
     case "education":
       return resume.education?.length ? <EducationList items={resume.education} /> : null;
     case "skills":
+      // "Grouped skills" templates show categories when the user has made some; otherwise the plain list.
+      if (resume.skillLayout === "categories" && resume.skillGroups?.length) {
+        return <SkillGroups groups={resume.skillGroups} />;
+      }
       return resume.skills?.length ? <SkillsList items={resume.skills} variant={variants.skills} /> : null;
     case "languages":
       return resume.languages?.length ? (

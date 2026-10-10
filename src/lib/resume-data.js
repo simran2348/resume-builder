@@ -18,6 +18,7 @@ export const RESUME_DATA_KEYS = [
   "summary",
   "experience",
   "skills",
+  "skillCategories",
   "education",
   "projects",
   "hobbies",
@@ -69,8 +70,29 @@ export function newListItem(section, fields = {}) {
   return { id: nanoid(8), ...defaults, ...fields };
 }
 
-export function newChip(name) {
+// Skills also carry an optional `categoryId` (see skillCategories).
+export function newChip(name, categoryId) {
+  return { id: nanoid(8), name, ...(categoryId && { categoryId }) };
+}
+
+export function newSkillCategory(name = "") {
   return { id: nanoid(8), name };
+}
+
+// Skills in display order plus, when categories are in use, their groups. Skills keep one flat list in the
+// store; with categories on, each has a `categoryId` and is listed in category order. List-style templates
+// use `skills`, "Grouped skills" templates use `groups`.
+export function groupSkills(skills = [], categories = []) {
+  if (!categories.length) return { skills: skills.map((s) => s.name), groups: [] };
+  const known = new Set(categories.map((c) => c.id));
+  const groups = [
+    ...categories.map((c) => ({ name: c.name.trim(), items: skills.filter((s) => s.categoryId === c.id) })),
+    // Safety net: a skill whose category no longer exists still shows, without a label.
+    { name: "", items: skills.filter((s) => !known.has(s.categoryId)) },
+  ]
+    .map((g) => ({ name: g.name, items: g.items.map((s) => s.name) }))
+    .filter((g) => g.items.length);
+  return { skills: groups.flatMap((g) => g.items), groups };
 }
 
 const hasText = (...values) => values.some((v) => typeof v === "string" && v.trim());
@@ -82,6 +104,7 @@ export function toTemplateResume(data) {
     summary = "",
     experience = [],
     skills = [],
+    skillCategories = [],
     education = [],
     projects = [],
     hobbies = [],
@@ -92,6 +115,8 @@ export function toTemplateResume(data) {
     sectionOrder = DEFAULT_SECTION_ORDER,
     hiddenSections = [],
   } = data;
+
+  const groupedSkills = groupSkills(skills, skillCategories);
 
   return {
     personal,
@@ -107,7 +132,8 @@ export function toTemplateResume(data) {
         ...formatRange(job),
         bullets: job.bullets.map((b) => b.text.trim()).filter(Boolean),
       })),
-    skills: skills.map((s) => s.name),
+    skills: groupedSkills.skills,
+    skillGroups: groupedSkills.groups,
     hobbies: hobbies.map((h) => h.name),
     education: education
       .filter((e) => hasText(e.degree, e.school))
@@ -164,6 +190,26 @@ function splitEntry({ title = "", subtitle = "" }) {
   };
 }
 
+// Skills from an imported resume. Lines like "Frontend: React, Next.js" become categories.
+function importedSkills(parsed) {
+  if (!parsed.skillGroups?.length) {
+    return { skills: [...new Set(parsed.skills ?? [])].map((name) => newChip(name)), skillCategories: [] };
+  }
+  const skillCategories = [];
+  const skills = [];
+  const seen = new Set();
+  for (const group of parsed.skillGroups) {
+    const category = newSkillCategory(group.name);
+    skillCategories.push(category);
+    for (const name of group.items) {
+      if (seen.has(name.toLowerCase())) continue;
+      seen.add(name.toLowerCase());
+      skills.push(newChip(name, category.id));
+    }
+  }
+  return { skills, skillCategories };
+}
+
 // Converts the parser output (see src/lib/resume-parser.js) into builder items.
 export function fromParsedResume(parsed) {
   return {
@@ -183,7 +229,7 @@ export function fromParsedResume(parsed) {
     projects: (parsed.projects ?? []).map((entry) =>
       newListItem("projects", { name: entry.title, role: entry.subtitle, description: entry.bullets?.join("\n") ?? "" })
     ),
-    skills: [...new Set(parsed.skills ?? [])].map(newChip),
+    ...importedSkills(parsed),
     languages: (parsed.languages ?? []).map((name) => newListItem("languages", { name })),
     certifications: (parsed.certifications ?? []).map((name) => newListItem("certifications", { name })),
     achievements: (parsed.achievements ?? []).map((title) => newListItem("achievements", { title })),
@@ -233,7 +279,12 @@ export function toPlainText(resume) {
         [job.role, job.company].filter(Boolean).join(", ") + (range(job) ? ` (${range(job)})` : ""),
         ...job.bullets.map((b) => `• ${b}`),
       ]),
-    skills: () => (resume.skills.length ? [resume.skills.join(", ")] : []),
+    skills: () =>
+      resume.skillGroups?.length
+        ? resume.skillGroups.map((g) => (g.name ? `${g.name}: ` : "") + g.items.join(", "))
+        : resume.skills.length
+          ? [resume.skills.join(", ")]
+          : [],
     education: () =>
       resume.education.flatMap((e) => [
         [e.degree, e.school].filter(Boolean).join(", ") + (range(e) ? ` (${range(e)})` : ""),

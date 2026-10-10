@@ -71,6 +71,12 @@ export const SAMPLE_RESUME = {
   ],
   hobbies: ["Rock climbing", "Photography", "Chess"],
   skills: ["JavaScript", "TypeScript", "React", "Next.js", "Node.js", "PostgreSQL", "AWS", "Docker"],
+  // Shown by "Grouped skills" templates.
+  skillGroups: [
+    { name: "Frontend", items: ["JavaScript", "TypeScript", "React", "Next.js"] },
+    { name: "Backend", items: ["Node.js", "PostgreSQL"] },
+    { name: "Cloud & DevOps", items: ["AWS", "Docker"] },
+  ],
   // `level` is 1–5 and drives the proficiency bars in some templates.
   languages: [
     { name: "English", proficiency: "Native", level: 5 },

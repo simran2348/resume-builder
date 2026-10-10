@@ -5,7 +5,15 @@ import { persist } from "zustand/middleware";
 import { arrayMove } from "@dnd-kit/sortable";
 
 import { BUILDER_STEPS, DEFAULT_SECTION_ORDER, DEFAULT_THEME, FORM_PANEL_WIDTH } from "@/constants/builder";
-import { RESUME_DATA_KEYS, fromParsedResume, newBullet, newChip, newExperience, newListItem } from "@/lib/resume-data";
+import {
+  RESUME_DATA_KEYS,
+  fromParsedResume,
+  newBullet,
+  newChip,
+  newExperience,
+  newListItem,
+  newSkillCategory,
+} from "@/lib/resume-data";
 
 // Applies `update` to the experience entry with `id`.
 function mapExperience(state, id, update) {
@@ -29,9 +37,11 @@ const EMPTY_RESUME = {
   personal: EMPTY_PERSONAL,
   summary: "",
   experience: [],
-  // Chip sections: [{ id, name }]
+  // Chip sections: [{ id, name }]. Skills also have a `categoryId` while categories are in use.
   skills: [],
   hobbies: [],
+  // Skill categories, e.g. [{ id, name: "Frontend" }]. Empty = skills are one simple list.
+  skillCategories: [],
   // List sections (see LIST_SECTIONS): [{ id, ...fields }]
   education: [],
   projects: [],
@@ -128,7 +138,10 @@ export const useBuilderStore = create(
       // ---------- Chip and list sections (skills, hobbies, education, projects, ...) ----------
       // `addItem` returns the new id so the UI can focus / expand it.
       addItem: (section, fields = {}) => {
-        const item = section === "skills" || section === "hobbies" ? newChip(fields.name) : newListItem(section, fields);
+        const item =
+          section === "skills" || section === "hobbies"
+            ? newChip(fields.name, fields.categoryId)
+            : newListItem(section, fields);
         set((state) => ({ [section]: [...state[section], item] }));
         return item.id;
       },
@@ -139,6 +152,45 @@ export const useBuilderStore = create(
       removeItem: (section, id) => set((state) => ({ [section]: state[section].filter((item) => item.id !== id) })),
       moveItem: (section, fromIndex, toIndex) =>
         set((state) => ({ [section]: arrayMove(state[section], fromIndex, toIndex) })),
+
+      // ---------- Skill categories ----------
+      // Turning categories on puts every existing skill into one first (unnamed) category.
+      enableSkillCategories: () =>
+        set((state) => {
+          const category = newSkillCategory();
+          return {
+            skillCategories: [category],
+            skills: state.skills.map((skill) => ({ ...skill, categoryId: category.id })),
+          };
+        }),
+      // Turning them off keeps every skill, in category order, as one simple list.
+      disableSkillCategories: () =>
+        set((state) => {
+          const known = new Set(state.skillCategories.map((c) => c.id));
+          const ordered = [
+            ...state.skillCategories.flatMap((c) => state.skills.filter((skill) => skill.categoryId === c.id)),
+            ...state.skills.filter((skill) => !known.has(skill.categoryId)),
+          ];
+          // eslint-disable-next-line no-unused-vars
+          return { skillCategories: [], skills: ordered.map(({ categoryId, ...skill }) => skill) };
+        }),
+      addSkillCategory: () => {
+        const category = newSkillCategory();
+        set((state) => ({ skillCategories: [...state.skillCategories, category] }));
+        return category.id;
+      },
+      renameSkillCategory: (id, name) =>
+        set((state) => ({
+          skillCategories: state.skillCategories.map((c) => (c.id === id ? { ...c, name } : c)),
+        })),
+      // Removes the category and the skills in it.
+      removeSkillCategory: (id) =>
+        set((state) => ({
+          skillCategories: state.skillCategories.filter((c) => c.id !== id),
+          skills: state.skills.filter((skill) => skill.categoryId !== id),
+        })),
+      moveSkillCategory: (fromIndex, toIndex) =>
+        set((state) => ({ skillCategories: arrayMove(state.skillCategories, fromIndex, toIndex) })),
 
       // ---------- Experience ----------
       addExperience: () => {
@@ -184,9 +236,12 @@ export const useBuilderStore = create(
             if (!personal[key] && parsed.personal?.[key]) personal[key] = parsed.personal[key];
           }
           const next = { personal, summary: state.summary || parsed.summary || "", importedFrom: fileName };
-          for (const [section, items] of Object.entries(fromParsedResume(parsed))) {
+          const { skillCategories, ...sections } = fromParsedResume(parsed);
+          for (const [section, items] of Object.entries(sections)) {
             next[section] = state[section].length ? state[section] : items;
           }
+          // Imported categories only come along with the imported skills they group.
+          if (!state.skills.length && skillCategories.length) next.skillCategories = skillCategories;
           return next;
         }),
     }),

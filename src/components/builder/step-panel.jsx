@@ -7,6 +7,7 @@ import ExperienceStep from "@/components/builder/steps/experience-step";
 import ListStep from "@/components/builder/steps/list-step";
 import PersonalStep from "@/components/builder/steps/personal-step";
 import ReviewStep from "@/components/builder/steps/review-step";
+import SkillsStep from "@/components/builder/steps/skills-step";
 import SummaryStep from "@/components/builder/steps/summary-step";
 import { getDefaultSectionTitle } from "@/components/builder/templates";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ const STEP_COMPONENTS = {
   personal: PersonalStep,
   summary: SummaryStep,
   experience: ExperienceStep,
-  skills: () => <ChipsStep section="skills" />,
+  skills: SkillsStep,
   education: () => <ListStep section="education" />,
   projects: () => <ListStep section="projects" />,
   hobbies: () => <ChipsStep section="hobbies" />,

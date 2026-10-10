@@ -115,6 +115,26 @@ function toList(lines) {
     .filter(Boolean);
 }
 
+// Skills written as "Frontend: React, Next.js" lines become groups. Returns [] when no line has a label.
+// Unlabelled lines in a labelled section go into an "Other" group.
+const SKILL_GROUP_RE = /^([^:,]{1,30}):\s*(.+)$/;
+
+function toSkillGroups(lines) {
+  const groups = [];
+  const other = [];
+  for (const line of lines.map((l) => l.replace(BULLET_RE, "").trim())) {
+    const match = line.match(SKILL_GROUP_RE);
+    const items = (match ? match[2] : line)
+      .split(/[,|•·;]/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+    if (match) groups.push({ name: match[1].trim(), items });
+    else other.push(...items);
+  }
+  if (!groups.length) return [];
+  return other.length ? [...groups, { name: "Other", items: other }] : groups;
+}
+
 export function parseResumeText(rawText) {
   const lines = rawText
     .split("\n")
@@ -151,6 +171,7 @@ export function parseResumeText(rawText) {
     education: toEntries(sections.education ?? []),
     projects: toEntries(sections.projects ?? []),
     skills: toList(sections.skills ?? []),
+    skillGroups: toSkillGroups(sections.skills ?? []),
     certifications: toList(sections.certifications ?? []),
     achievements: (sections.achievements ?? []).map((line) => line.replace(BULLET_RE, "")),
     languages: toList(sections.languages ?? []),
